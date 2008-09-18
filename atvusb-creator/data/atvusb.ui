@@ -1,0 +1,359 @@
+<ui version="4.0" >
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog" >
+  <property name="windowModality" >
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>430</width>
+    <height>445</height>
+   </rect>
+  </property>
+  <property name="sizePolicy" >
+   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle" >
+   <string>ATV USB Creator</string>
+  </property>
+  <property name="autoFillBackground" >
+   <bool>false</bool>
+  </property>
+  <property name="sizeGripEnabled" >
+   <bool>false</bool>
+  </property>
+  <property name="modal" >
+   <bool>false</bool>
+  </property>
+  <widget class="QTextEdit" name="statusInfoEdit" >
+   <property name="geometry" >
+    <rect>
+     <x>8</x>
+     <y>248</y>
+     <width>414</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="whatsThis" >
+    <string/>
+   </property>
+   <property name="readOnly" >
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="progressBar" >
+   <property name="geometry" >
+    <rect>
+     <x>8</x>
+     <y>364</y>
+     <width>414</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="whatsThis" >
+    <string/>
+   </property>
+   <property name="value" >
+    <number>0</number>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="browseGroup" >
+   <property name="geometry" >
+    <rect>
+     <x>8</x>
+     <y>188</y>
+     <width>190</width>
+     <height>53</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="whatsThis" >
+    <string/>
+   </property>
+   <property name="title" >
+    <string>Download AppleTV Update DMG or</string>
+   </property>
+   <widget class="QPushButton" name="browseButton" >
+    <property name="geometry" >
+     <rect>
+      <x>21</x>
+      <y>20</y>
+      <width>141</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Choose a DMG</string>
+    </property>
+    <property name="iconSize" >
+     <size>
+      <width>16</width>
+      <height>16</height>
+     </size>
+    </property>
+    <property name="shortcut" >
+     <string>Alt+B</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="deviceGroup" >
+   <property name="geometry" >
+    <rect>
+     <x>192</x>
+     <y>384</y>
+     <width>190</width>
+     <height>53</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="whatsThis" >
+    <string/>
+   </property>
+   <property name="title" >
+    <string>USB Target Device</string>
+   </property>
+   <widget class="QComboBox" name="deviceCombo" >
+    <property name="geometry" >
+     <rect>
+      <x>28</x>
+      <y>20</y>
+      <width>153</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="editable" >
+     <bool>false</bool>
+    </property>
+    <property name="insertPolicy" >
+     <enum>QComboBox::InsertAtTop</enum>
+    </property>
+    <property name="duplicatesEnabled" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="deviceRefreshButton" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>30</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string/>
+    </property>
+    <property name="icon" >
+     <iconset resource="resources.qrc" >
+      <normaloff>:/refresh.png</normaloff>:/refresh.png</iconset>
+    </property>
+    <property name="flat" >
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="headerLabel" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>430</width>
+     <height>128</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string/>
+   </property>
+   <property name="pixmap" >
+    <pixmap resource="resources.qrc" >:/atv-bootloader.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="installerGroup" >
+   <property name="geometry" >
+    <rect>
+     <x>8</x>
+     <y>132</y>
+     <width>190</width>
+     <height>53</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="whatsThis" >
+    <string/>
+   </property>
+   <property name="title" >
+    <string>Choose an Installation</string>
+   </property>
+   <widget class="QComboBox" name="installerMenu" >
+    <property name="geometry" >
+     <rect>
+      <x>8</x>
+      <y>20</y>
+      <width>176</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="editable" >
+     <bool>false</bool>
+    </property>
+    <property name="currentIndex" >
+     <number>-1</number>
+    </property>
+    <property name="maxVisibleItems" >
+     <number>25</number>
+    </property>
+    <property name="maxCount" >
+     <number>100</number>
+    </property>
+    <property name="duplicatesEnabled" >
+     <bool>false</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="installGroup" >
+   <property name="geometry" >
+    <rect>
+     <x>208</x>
+     <y>132</y>
+     <width>213</width>
+     <height>109</height>
+    </rect>
+   </property>
+   <property name="font" >
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="whatsThis" >
+    <string/>
+   </property>
+   <property name="title" >
+    <string>Installation Options</string>
+   </property>
+   <widget class="QComboBox" name="installMenu_1" >
+    <property name="geometry" >
+     <rect>
+      <x>8</x>
+      <y>20</y>
+      <width>197</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="accessibleName" >
+     <string/>
+    </property>
+    <property name="editable" >
+     <bool>false</bool>
+    </property>
+    <property name="currentIndex" >
+     <number>-1</number>
+    </property>
+    <property name="duplicatesEnabled" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="installMenu_2" >
+    <property name="geometry" >
+     <rect>
+      <x>8</x>
+      <y>48</y>
+      <width>197</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="accessibleName" >
+     <string/>
+    </property>
+    <property name="editable" >
+     <bool>false</bool>
+    </property>
+    <property name="currentIndex" >
+     <number>-1</number>
+    </property>
+    <property name="duplicatesEnabled" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="installMenu_3" >
+    <property name="geometry" >
+     <rect>
+      <x>28</x>
+      <y>76</y>
+      <width>176</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="accessibleName" >
+     <string/>
+    </property>
+    <property name="editable" >
+     <bool>false</bool>
+    </property>
+    <property name="currentIndex" >
+     <number>-1</number>
+    </property>
+    <property name="duplicatesEnabled" >
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="installCheckbox" >
+    <property name="geometry" >
+     <rect>
+      <x>9</x>
+      <y>80</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string/>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="startButton" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="geometry" >
+    <rect>
+     <x>40</x>
+     <y>402</y>
+     <width>140</width>
+     <height>34</height>
+    </rect>
+   </property>
+   <property name="whatsThis" >
+    <string/>
+   </property>
+   <property name="text" >
+    <string>Create Using -></string>
+   </property>
+  </widget>
+ </widget>
+ <resources>
+  <include location="resources.qrc" />
+ </resources>
+ <connections/>
+</ui>
