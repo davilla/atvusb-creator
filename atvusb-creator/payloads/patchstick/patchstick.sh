@@ -13,7 +13,7 @@ mount -t hfsplus -o rw,force /dev/sda3 /OSBoot
 
 echo "       * mounting Media partition"
 fsck.hfsplus -f /dev/sda4
-mount -t hfsplus -o rw,force /dev/sda3 /OSBoot/mnt
+mount -t hfsplus -o rw,force /dev/sda4 /OSBoot/mnt
  
 echo "        * keeping the OSBoot partition r/w for plugins"
 touch /OSBoot/.readwrite
@@ -23,7 +23,8 @@ echo "       * symlinking /mnt/rootfs -> /payloads"
 ln -s /mnt/rootfs /payloads
 
 echo "       * create staging directory for install scripts"
-mkdir /staging
+mkdir /OSBoot/Users/Frontrow/staging
+ln -s /OSBoot/Users/Frontrow/staging /staging
 
 
 # Install dropbear SSHif [ -f /payloads/dropbear/install.sh ]; then  payloads/dropbear/install.sh   echo "      * Installing dropbear SSH...                                        [ok]"else  echo "      * Installing dropbear SSH...                                      [FAIL]"fi
