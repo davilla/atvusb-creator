@@ -203,11 +203,12 @@ class LiveUSBCreator(object):
     def setup_disk_image(self, progress):
         image_dst = os.path.join('staging')
         # extract the base disk image
-        # created using "7za a -t7z atvusb_1GB_disk.7z atvusb_1GB_disk.img"
+        # created using "7za a -t7z atv_512MB.7z atv_512MB.img"
         archive = os.path.join('payloads', usb_info[0]['file'])
         usb_image = os.path.join('staging', usb_info[0]['name'])
         self.extract_7z_image(progress, archive, usb_image, image_dst)
         # extract the hfs recovery image
+        # created using "7za a -t7z atv_recv.7z atv_recv.img"
         archive = os.path.join('payloads', hfs_info[0]['file'])
         hfs_image = os.path.join('staging', hfs_info[0]['name'])
         self.extract_7z_image(progress, archive, hfs_image, image_dst)
@@ -226,6 +227,9 @@ class LiveUSBCreator(object):
         # dd the usb image to the USB flash drive
         progress.status("Creating USB Flash" )
         self.dd_disk_image(progress, usb_image)
+        
+        self.mount_disk(progress)
+
 
     #---------------------------------------------------------------------------------
     def dd_disk_image(self, progress, image):
@@ -299,6 +303,16 @@ class LiveUSBCreator(object):
             os_cmd = 'diskutil unmountDisk %s' %(self.drive)
         else:
             os_cmd = 'umountDisk %s' %s(self.drive)
+        [status, rtn] = commands.getstatusoutput(os_cmd)
+
+    #---------------------------------------------------------------------------------
+    def mount_disk(self, progress):
+        if sys.platform == "win32":
+            os_cmd = 'mountDisk %s' %s(self.drive)
+        elif sys.platform == "darwin":
+            os_cmd = 'diskutil mountDisk %s' %(self.drive)
+        else:
+            os_cmd = 'mountDisk %s' %s(self.drive)
         [status, rtn] = commands.getstatusoutput(os_cmd)
 
     #---------------------------------------------------------------------------------

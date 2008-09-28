@@ -1,0 +1,149 @@
+gpt -r show /dev/disk1
+
+gpt remove -i 2 /dev/disk1
+
+gpt remove [-b number] [-i index] [-s count] [-t type] device
+
+gpt add -b 40 -i 1 -s 1792200 -t "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7" /dev/disk1
+gpt add -b 1792240 -i 2 -s 51000 -t "5265636F-7665-11AA-AA11-00306543ECAC" /dev/disk1
+
+
+gpt destroy /dev/disk1
+gpt create /dev/disk1
+
+# blkid /dev/sdb1
+/dev/sdb1: LABEL="PATCHSTICK" UUID="170C-1ADF" TYPE="vfat" 
+
+# findfs LABEL=PATCHSTICK
+/dev/sdb1
+
+mount -t vfat -o shortname=mixed /dev/sdb1 tmp
+
+rm -rf staging/*
+cp Archive.pax.gz staging
+cd staging
+gzip -cd Archive.pax.gz | pax -r .
+rsync -r opt /mnt/OSBoot/
+
+gpt remove -i 1
+gpt add -b 40 -i 1 -s 948760 -t "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7" /dev/disk1
+
+
+
+hdid /dev/disk2s1
+
+#********************************************************************************
+  283  parted atv1GB_disk.img
+  284  sudo parted -s atv1GB_disk.img mklabel gpt
+  285  sudo parted -s atv1GB_disk.img mkpart primary fat32 40s 1792199s
+  286  sudo parted -s atv1GB_disk.img set 1 boot
+  287  sudo parted -s atv1GB_disk.img mkpart primary HFS 1792000s 1843199s
+  288  parted atv1GB_disk.img 
+  289  ls -l
+  290  ls -lh
+  291  7z a atv1GB_disk.7z atv1GB_disk.img 
+  292  ls -l
+  293  sudo mkfs.hfsplus -v Recovery atvrecv.img 
+  294  ls
+  295  ls tmp
+  296  mount atvrecv.img tmp
+  297  sudo mount atvrecv.img tmp
+  298  sudo mount -o loop atvrecv.img tmp
+  299  ls tmp
+  300  ls recovery/
+  301  cp /media/Recovery/boot.efi tmp/
+  302  sudo cp /media/Recovery/boot.efi tmp/
+ 
+
+
+sudo dd if=/dev/zero of=/dev/sdb bs=512 count=32
+
+
+1005056s * 512 = 514,588,672 bytes
+
+512 * 1024 * 1024 = 536,870,912
+
+512 * 1000 * 1000 = 512,000,000
+
+1000000 - 51200 = 948,800
+
+40s to 948799s
+948800s to 999966s
+
+dd if=/dev/zero of=atv512MB_disk.img bs=512 count=1000000
+
+sudo parted -s atv512MB_disk.img mklabel gpt
+sudo parted -s mkpart primary fat32 40s 948799s
+sudo parted -s set 1 boot on
+sudo parted -s mkpart primary HFS 948800s 999966s
+
+
+
+***********
+hdiutil unmount /Volumes/USB_DISK/
+
+
+dd if=/dev/zero of=/dev/disk1 bs=512 count=100
+
+# Under OSX
+dd if=/dev/zero of=atv_512MB.img bs=512 count=1000000
+gpt create atv_512MB.img
+gpt -r show atv_512MB.img
+gpt add -b 40 -i 1 -s 948800 -t "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7" atv_512MB.img
+gpt add -b 948840 -i 2 -s 51000 -t "5265636F-7665-11AA-AA11-00306543ECAC" atv_512MB.img
+
+#Under Linux
+# format first partition
+sudo losetup -o 20480 /dev/loop0 atv_512MB.img
+sudo mkfs.vfat -F 32 -n "PATCHSTICK" /dev/loop0
+sudo losetup -d /dev/loop0
+
+# format second partition
+sudo losetup -o 485806080 /dev/loop0 atv_512MB.img
+sudo mkfs.hfsplus -v "Recovery" /dev/loop0
+sudo losetup -d /dev/loop0
+
+#need byte offset
+#sudo mount -t vfat -o loop,rw,offset=20480 atv_512MB.img /mnt/atv1
+#sudo mount -t hfsplus -o loop,rw,offset=485806080 atv_512MB.img /mnt/atv2
+
+gtpsync atv_512MB.img
+
+dd if=/dev/zero of=atv_recv.img bs=512 count=51000
+sudo losetup /dev/loop0 atv_recv.img
+sudo mkfs.hfsplus -v "Recovery" /dev/loop0
+sudo losetup -d /dev/loop0
+sudo mount -t hfsplus -o loop,rw  atv_recv.img /mnt/atv2
+sudo cp recovery/boot.efi /mnt/atv2
+sudo cp recovery/com.apple.Boot.plist /mnt/atv2
+sudo cp recovery/mach_kernel /mnt/atv2
+sudo cp -r recovery/System /mnt/atv2
+sudo cp recovery/BootLogo.png /mnt/atv2
+sudo umount /mnt/atv2
+
+# Under OSX, find the offset to boot.efi. This will be a 4096 byte sector value.
+hdiutil attach atv_recv.img
+hfsdebug /Volumes/Recovery/boot.efi
+
+startBlock = 0x64 = 100 (4096 byte sector)
+blockCount = 0x49 = 73
+
+
+7za a -t7z  atv_recv.7z atv_recv.img 
+7za a -t7z  atv_512MB.7z atv_512MB.img
+
+
+
+
+
+
+
+
+dd if=/dev/hda1 of=/mnt/backup/backupfile.dat & // background the process
+while ($!) // while the process is still running
+  kill -SIGINFO $! // request info from the process
+  sleep 1000 // wait a second
+wend
+
+
+

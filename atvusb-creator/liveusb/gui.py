@@ -187,7 +187,7 @@ class LiveUSBThread(QtCore.QThread):
             self.status("Creating USB Image...")
             self.live.setup_disk_image(progress=self)
             #
-            self.live.umount_disk(progress=self)
+            #self.live.umount_disk(progress=self)
             #
             duration = str(datetime.now() - now).split('.')[0]
             self.status("Complete! (%s)" % duration)

@@ -16,15 +16,15 @@ osx_dmg_info = (
 
 usb_info = (
     {
-        'name'  : 'atvusb_1GB_disk.img',
-        'file'  : 'atvusb_1GB_disk.7z',
+        'name'  : 'atv_512MB.img',
+        'file'  : 'atv_512MB.7z',
         'sha1'  : '0000000000000000000000000000000000000000',
-        'size'  : 2048000 * 512,
+        'size'  : 1000000 * 512,
         'p1_fs' : 'fat32',
         'p1_bgn': 40 * 512,
-        'p2_cnt': 1792200 * 512,
+        'p2_cnt': 948800 * 512,
         'p2_fs' : 'hfsplus',
-        'p2_bgn': 1792240 * 512,
+        'p2_bgn': 948840 * 512,
         'p2_cnt': 51000 * 512,
     },
 )
@@ -36,12 +36,12 @@ usb_info = (
 # hdiutil detach tmp
 hfs_info = (
     {
-        'name'  : 'atvusb_boot.img',
-        'file'  : 'atvusb_boot.7z',
+        'name'  : 'atv_recv.img',
+        'file'  : 'atv_recv.7z',
         'sha1'  : '0000000000000000000000000000000000000000',
         'size'  : 51000 * 512,
         'p1_fs' : 'hfsplus',
-        'efibgn': 7483392,
+        'efibgn': 100 * 4096,
         'eficnt': 298800,
     },
 )
