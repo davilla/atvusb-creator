@@ -296,6 +296,16 @@ packages = (
         'loader' : 'install.sh'
     },
     {
+        'name'   : 'XBMC for Mac',
+        'enable' : True,
+        'depends': 'atv-2.0, atv-2.1',
+        'install': True,
+        'url'    : 'http://downloads.sourceforge.net/xbmc/XBMC_for_Mac-Atlantis-Beta_1.dmg',
+        'type'   : 'plugin',
+        'loader' : 'install.sh'
+    },
+    
+    {
         'name'   : 'USB Mass Storage',
         'enable' : False,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
