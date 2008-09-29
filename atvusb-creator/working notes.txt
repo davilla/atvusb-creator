@@ -163,3 +163,5 @@ python setup.py py2app -A
 
 py2applet --make-setup atvusb-creator.py
 
+
+mv dist/atvusb-creator.app dist/tmp.app; ditto --rsrc --arch i386 dist/tmp.app dist/atvusb-creator.app; rm -rf tmp.app

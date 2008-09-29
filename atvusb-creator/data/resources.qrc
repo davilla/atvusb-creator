@@ -1,8 +1,8 @@
 <RCC>
   <qresource>
     <file>atv-bootloader.png</file>
-    <file>atvmod-patchstick.png</file>
     <file>restore.png</file>
+    <file>atv-patchstick.png</file>
     <file>xbmc.png</file>
     <file>boxee.png</file>
     <file>elisa.png</file>
