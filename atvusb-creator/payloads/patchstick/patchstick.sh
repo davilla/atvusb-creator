@@ -23,11 +23,15 @@ echo "       * symlinking /mnt/rootfs -> /payloads"
 ln -s /mnt/rootfs /payloads
 
 echo "       * create staging directory for install scripts"
-mkdir /OSBoot/Users/Frontrow/staging
+mkdir -p /OSBoot/Users/Frontrow/staging
 ln -s /OSBoot/Users/Frontrow/staging /staging
 
+# 
+for script in $( find /payloads/ -name install.sh -print ); do
+  echo $script
+  /bin/bash $script
+done
 
-# Install dropbear SSHif [ -f /payloads/dropbear/install.sh ]; then  payloads/dropbear/install.sh   echo "      * Installing dropbear SSH...                                        [ok]"else  echo "      * Installing dropbear SSH...                                      [FAIL]"fi
 
 sync &>/dev/null
 umount /OSBoot/mnt

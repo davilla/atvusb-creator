@@ -25,7 +25,7 @@ Developing
         python setup_osx.py py2app --alias 
 
 	# distribution
-        python setup_osx.py py2app
+        python setup_osx.py py2app --includes sip
 
   o If you change the QtDesigner ui file, you can compile it by doing:
 

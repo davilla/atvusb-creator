@@ -182,12 +182,8 @@ class LiveUSBThread(QtCore.QThread):
                 self.status("Extracting boot.efi ...")
                 self.live.extract_bootefi(progress=self)
             #
-            self.live.umount_disk(progress=self)
-            #
             self.status("Creating USB Image...")
-            self.live.setup_disk_image(progress=self)
-            #
-            #self.live.umount_disk(progress=self)
+            self.live.create_image(progress=self)
             #
             duration = str(datetime.now() - now).split('.')[0]
             self.status("Complete! (%s)" % duration)
@@ -268,8 +264,13 @@ class LiveUSBDialog(QtGui.QDialog, Ui_Dialog):
     
     #---------------------------------------------------------------------------------
     def set_installer_options(self):
+        for installer in self.live.installers:
+            installer['install'] = False;
+
         # populate first options menu
         installer = self.live.installers[self.installerMenu.currentIndex()]
+        installer['install'] = True;
+        
         #
         self.installMenu_1.clear()
         self.installMenu_1.setEnabled(True)

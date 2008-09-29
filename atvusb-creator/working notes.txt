@@ -146,4 +146,19 @@ while ($!) // while the process is still running
 wend
 
 
+python setup.py py2app --includes sip
 
+
+locate macdeploy
+
+
+open /Users/davilla/Documents/atv-usb-creator/trunk/atvusb-creator/dist/atvusb-creator.app
+
+
+./dist/atvusb-creator.app/Contents/MacOS/atvusb-creator 
+
+
+python setup.py py2app -A
+
+
+py2applet --make-setup atvusb-creator.py

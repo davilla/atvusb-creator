@@ -80,9 +80,21 @@ class LiveUSBCreator(object):
         self._setup_logger()
         self.load_installers()
         # preset some paths
-        self.bootefi = os.path.join('downloads', "boot.efi")
+        path = self.get_application_path();
+        #print path
+        abspath = os.path.abspath(path)
+        #print abspath
+        
+        self.staging = os.path.join(abspath, 'staging')
+        self.downloads = os.path.join(abspath, 'downloads')
+
+        if not os.path.exists(self.staging):
+            os.mkdir(self.staging)
+        if not os.path.exists(self.downloads):
+            os.mkdir(self.downloads)
+
+        self.bootefi = os.path.join(self.staging, "boot.efi")
         self.payloads = os.path.join('payloads')
-        self.downloads = os.path.join('downloads')
 
 
     #---------------------------------------------------------------------------------
@@ -200,17 +212,20 @@ class LiveUSBCreator(object):
         raise NotImplementedError
 
     #---------------------------------------------------------------------------------
-    def setup_disk_image(self, progress):
-        image_dst = os.path.join('staging')
+    def create_image(self, progress):
+        # unmount this disk
+        self.umount_disk(progress)
+
+        image_dst = os.path.join(self.staging)
         # extract the base disk image
         # created using "7za a -t7z atv_512MB.7z atv_512MB.img"
-        archive = os.path.join('payloads', usb_info[0]['file'])
-        usb_image = os.path.join('staging', usb_info[0]['name'])
+        archive = os.path.join(self.payloads, usb_info[0]['file'])
+        usb_image = os.path.join(self.staging, usb_info[0]['name'])
         self.extract_7z_image(progress, archive, usb_image, image_dst)
         # extract the hfs recovery image
         # created using "7za a -t7z atv_recv.7z atv_recv.img"
-        archive = os.path.join('payloads', hfs_info[0]['file'])
-        hfs_image = os.path.join('staging', hfs_info[0]['name'])
+        archive = os.path.join(self.payloads, hfs_info[0]['file'])
+        hfs_image = os.path.join(self.staging, hfs_info[0]['name'])
         self.extract_7z_image(progress, archive, hfs_image, image_dst)
         #
         # overlay boot.efi into the hfs partition image
@@ -228,9 +243,59 @@ class LiveUSBCreator(object):
         progress.status("Creating USB Flash" )
         self.dd_disk_image(progress, usb_image)
         
+        # now install the payloads onto the "PATCHSTICK" volume
         self.mount_disk(progress)
+        for installer in installers:
+            if installer['install']:
+                self.install_payload(installer)
+                break
+                
+                
+        #self.umount_disk(progress)
 
 
+    #---------------------------------------------------------------------------------
+    def install_payload(self, installer):
+        volume_path = ""
+        if sys.platform == "win32":
+            # this need fixing
+            volume_path = "/Volumes/PATCHSTICK"
+        elif sys.platform == "darwin":
+            volume_path = "/Volumes/PATCHSTICK"
+        else:
+            # this need fixing
+            pass
+
+        #print volume_path
+        if os.path.exists(volume_path):
+            if installer['name'] == "ATV-Bootloader":
+                pass
+
+            elif installer['name'] == "ATV-Patchstick":
+                # copy patchstick.sh script
+                src = os.path.join(self.payloads, 'patchstick', 'patchstick.sh')
+                #print src
+                shutil.copy(src, volume_path)
+            
+                # create payloads directories
+                
+                # populate payloads
+                for package in packages:
+                    if package['install']:
+                        if package['type'] == "package":
+                            src = os.path.join(self.payloads, "patchstick", "packages", package['pkgname'])
+                            dst = os.path.join(volume_path, 'payloads', "patchstick", "packages", package['pkgname'])
+                        elif package['type'] == "plugin":
+                            src = os.path.join(self.payloads, "patchstick", "plugins", package['pkgname'])
+                            dst = os.path.join(volume_path, 'payloads', "patchstick", "plugins", package['pkgname'])
+
+                        # copy payload to patchstick
+                        #print src
+                        #print dst
+                        shutil.copytree(src, dst)
+            elif installer['name'] == "ATV Factory Restore":
+                pass
+               
     #---------------------------------------------------------------------------------
     def dd_disk_image(self, progress, image):
         if os.path.exists(image):
@@ -298,27 +363,22 @@ class LiveUSBCreator(object):
     #---------------------------------------------------------------------------------
     def umount_disk(self, progress):
         if sys.platform == "win32":
-            os_cmd = 'umountDisk %s' %s(self.drive)
+            os_cmd = 'umountDisk %s' %(self.drive)
         elif sys.platform == "darwin":
             os_cmd = 'diskutil unmountDisk %s' %(self.drive)
         else:
-            os_cmd = 'umountDisk %s' %s(self.drive)
+            os_cmd = 'umountDisk %s' %(self.drive)
         [status, rtn] = commands.getstatusoutput(os_cmd)
 
     #---------------------------------------------------------------------------------
     def mount_disk(self, progress):
         if sys.platform == "win32":
-            os_cmd = 'mountDisk %s' %s(self.drive)
+            os_cmd = 'mountDisk %s' %(self.drive)
         elif sys.platform == "darwin":
             os_cmd = 'diskutil mountDisk %s' %(self.drive)
         else:
-            os_cmd = 'mountDisk %s' %s(self.drive)
+            os_cmd = 'mountDisk %s' %(self.drive)
         [status, rtn] = commands.getstatusoutput(os_cmd)
-
-    #---------------------------------------------------------------------------------
-    def install_atvusb  (self, progress):
-        """ Install on our device """
-        raise NotImplementedError
 
     #---------------------------------------------------------------------------------
     def get_proxies(self):
@@ -331,6 +391,36 @@ class LiveUSBCreator(object):
         raise NotImplementedError
 
 
+    #---------------------------------------------------------------------------------
+    def find_packager(self): 
+        """ Detect packaging systems such as py2app and py2exe """ 
+        frozen = getattr(sys, 'frozen', None) 
+        if not frozen: 
+            # COULD be certain cx_Freeze options or bundlebuilder, nothing to worry about though 
+            return None 
+        elif frozen in ('dll', 'console_exe', 'windows_exe'): 
+            return 'py2exe' 
+        elif frozen in ('macosx_app',): 
+            return 'py2app' 
+        elif frozen is True: 
+            # it doesn't ALWAYS set this 
+            return 'cx_Freeze' 
+        else: 
+            return '<unknown packager: %r>' % (frozen,) 
+
+    #---------------------------------------------------------------------------------
+    def get_application_path(self):
+        packager = self.find_packager()
+        if packager == 'py2exe':
+            # note that another approach is
+            return os.path.dirname(os.path.abspath(sys.argv[0]))
+        elif packager == 'py2app':
+            # from path/Foo.app/Contents/Resources -> path, even if something in your application chdir'ed in the meantime
+            return os.path.dirname(os.path.dirname(os.path.dirname(os.environ['RESOURCEPATH'])))
+        else:
+          import __main__
+          return os.path.dirname(__main__.__file__)
+                              
 #-------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------
 class LinuxLiveUSBCreator(LiveUSBCreator):
@@ -395,11 +485,6 @@ class LinuxLiveUSBCreator(LiveUSBCreator):
             self.popen('umount ' + self.tmpdir)
 
     #---------------------------------------------------------------------------------
-    def install_atvusb(self, progress):
-        """ Install on our device """
-        self.log.info("Create ATV USB flash drive")
-
-    #---------------------------------------------------------------------------------
     def terminate(self):
         import signal
         self.log.info("Cleaning up...")
@@ -450,92 +535,26 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
         progress.update_progress(0)
         progress.set_max_progress(100)
         # mount the dmg disk image
-        [status, rtn] = commands.getstatusoutput("hdiutil attach %s -readonly -mountroot %s" %(self.dmg, self.downloads) )
+        abspath = os.path.abspath(self.downloads)
+        #print abspath
+        [status, rtn] = commands.getstatusoutput("hdiutil attach %s -readonly -mountroot %s" %(self.dmg, abspath) )
         if status:
-            self.log.warning("Unable to mount device: %s" %s(rtn) )
+            self.log.warning("Unable to mount device: %s" %(rtn) )
             return
         progress.update_progress(33)
         # copy boot.efi to downloads
-        bootefi_src = os.path.join('downloads', 'OSBoot', 'usr', 'standalone', 'i386', 'boot.efi')
+        bootefi_src = os.path.join(self.downloads, 'OSBoot', 'usr', 'standalone', 'i386', 'boot.efi')
         shutil.copy(bootefi_src, self.bootefi)
         progress.update_progress(66)
         # unmount the dmg disk image
         osboot = os.path.join(self.downloads, 'OSBoot')
-        [status, rtn] = commands.getstatusoutput("hdiutil detach %s" %(osboot) )
+        abspath = os.path.abspath(osboot)
+        #print abspath
+        [status, rtn] = commands.getstatusoutput("hdiutil detach %s" %(abspath) )
         if status:
             self.log.warning("Unable to unmount AppleTV Update DMG")
         progress.update_progress(100)
                         
-    #---------------------------------------------------------------------------------
-    def install_atvusb(self, progress):
-        """ Install on our device """
-        progress.update_progress(0)
-        progress.set_max_progress(100)
-        # copy boot.efi into the pre-made hfs partition image.
-        usb_img = os.path.join('payloads', 'atvusb_256MB_disk.img')
-        hfs_img = os.path.join('payloads', 'atvusb_256MB_hfs_partition.img')
-        # unzip the both images
-        if not os.path.exists(usb_img):
-            payload_dir = os.path.join('payloads')
-            usb_img_zip = os.path.join('payloads', 'atvusb_256MB_disk.img.zip')
-            progress.status("Unzipping %s" %(os.path.basename(usb_img_zip) ) )
-            [status, rtn] = commands.getstatusoutput("unzip %s -d %s" %(usb_img_zip, payload_dir) )
-            if status:
-                self.log.warning("Unable to unzip %s" %(os.path.basename(usb_img_zip) ) )
-                return
-        progress.update_progress(10)
-        if not os.path.exists(hfs_img):
-            payload_dir = os.path.join('payloads')
-            hfs_img_zip = os.path.join('payloads', 'atvusb_256MB_hfs_partition.img.zip')
-            progress.status("Unzipping %s" %(os.path.basename(hfs_img_zip) ) )
-            [status, rtn] = commands.getstatusoutput("unzip %s -d %s" %(hfs_img_zip, payload_dir) )
-            if status:
-                self.log.warning("Unable to unzip %s" %(os.path.basename(hfs_img_zip) ) )
-                return
-        progress.update_progress(20)
-        
-        # mount the hfs partition image
-        progress.status("Mounting %s" %(os.path.basename(hfs_img) ) )
-        [status, rtn] = commands.getstatusoutput("hdiutil attach %s -mountroot %s" %(hfs_img, self.payloads) )
-        if status:
-            self.log.warning("Unable to mount %s" %(os.path.basename(hfs_img) ) )
-            return
-        progress.update_progress(30)
-        # copy boot.efi to in the mounted hfs filesystem
-        progress.status("Injecting %s" %(os.path.basename(self.bootefi) ) )
-        recovery = os.path.join('payloads', 'Recovery')
-        shutil.copy(self.bootefi, recovery)
-        #[status, rtn] = commands.getstatusoutput("cp %s %s" %(self.bootefi, recovery) )
-        #if status:
-        #    self.log.warning("Unable to copy boot.efi" )
-        #    return
-        progress.update_progress(40)
-        # unmount the hfs partition image
-        [status, rtn] = commands.getstatusoutput("hdiutil detach %s" %(recovery) )
-        if status:
-            self.log.warning("Unable to unmount hfsplus recovery partition")
-        progress.update_progress(50)
-        
-        # dd usb disk image onto physical usb flash device use the raw disk (rdisk) for speed
-        #TODO - fix "/dev/disk#" to "/dev/rdisk#" convertion
-        path = string.split(self.drive, "/")
-        rdrive = "/" + path[1] + "/r" + path[2]
-        progress.status("Writing %s to %s" %(os.path.basename(usb_img), rdrive) )
-        [status, rtn] = commands.getstatusoutput("dd if=%s of=%s bs=1m" %(usb_img, rdrive) )
-        if status:
-            self.log.warning("Unable write usb disk image" )
-            return
-        progress.update_progress(75)
-            
-        # dd hfs partition image onto 1st partition of the physical usb flash device
-        drive_partition = rdrive + 's1'
-        progress.status("Writing %s to %s" %(os.path.basename(hfs_img), drive_partition) )
-        [status, rtn] = commands.getstatusoutput("dd if=%s of=%s bs=1m" %(hfs_img, drive_partition) )
-        if status:
-            self.log.warning("Unable write hfs partition image" )
-            return
-        progress.update_progress(100)
-
     #---------------------------------------------------------------------------------
     def terminate(self):
         import signal
@@ -589,11 +608,6 @@ class WindowsLiveUSBCreator(LiveUSBCreator):
     def extract_bootefi(self, progress):
         """ Extract boot.efi from DMG with 7-zip directly to the USB key """
         self.popen('7z x "%s" -x![BOOT] -y -o%s' % (self.dmg, self.drive))
-
-    #---------------------------------------------------------------------------------
-    def install_atvusb(self, progress):
-        """ Install on our device """
-        self.log.info("Create ATV USB flash drive")
 
     #---------------------------------------------------------------------------------
     def get_proxies(self):

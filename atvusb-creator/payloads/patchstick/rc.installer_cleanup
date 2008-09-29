@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# check that atv install directory exists
+if [ -d /Users/Frontrow/atv-install ]; then
+  PW="frontrow"
+
+  REMOUNT=0
+  # Check if / is mounted read only
+  if mount | grep ' on / '  | grep -q 'read-only'; then
+    REMOUNT=1
+    /sbin/mount -uw /
+  fi
+
+  # 
+  for script in $( find /Users/Frontrow/atv-install/ -name install.sh -print ); do
+    echo $script
+    echo $PW | sudo -S /bin/bash $script
+  done
+  
+  # remove ourself when done.
+  #echo $PW | sudo -S rm -rf /Users/Frontrow/atv-install/*
+  #echo $PW | sudo -S rm /etc/rc.installer_cleanup
+
+  # remount root as we found it
+  if [ "$REMOUNT" = "1" ]; then
+    /sbin/mount -ur /
+  fi
+fi

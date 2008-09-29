@@ -8,7 +8,7 @@ if [ -d /staging ]; then
   rm -rf /staging/*
 
   # unpack the package
-  tar -xzf /package/dropbear/dropbear.tar.gz -C /staging/
+  tar -xzf /payloads/packages/dropbear/dropbear.tar.gz -C /staging/
 
   # install package
   cp /staging/dropbear/System/Library/LaunchDaemons/com.atvMod.dropbear.plist /OSBoot/System/Library/LaunchDaemons/

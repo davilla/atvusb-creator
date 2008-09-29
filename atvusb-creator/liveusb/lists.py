@@ -53,16 +53,18 @@ installers = (
         'url'    : 'http://atv-bootloader.googlecode.com',
         'sha1'   : '0000000000000000000000000000000000000000',
         'enable' : True,
+        'install': True,
         'option1': 'backup',
         'option2': 'None',
         'option3': 'None',
     },
     {
-        'name'   : 'ATVMod Patchstick',
+        'name'   : 'ATV-Patchstick',
         'pict'   : ':atvmod-patchstick.png',
         'url'    : 'http://www.atvmod.googlecode.com',
         'sha1'   : '0000000000000000000000000000000000000000',
         'enable' : True,
+        'install': False,
         'option1': 'backup',
         'option2': 'patchsticks',
         'option3': 'packages',
@@ -73,6 +75,7 @@ installers = (
         'url'    : 'http://www.atvmod.googlecode.com',
         'sha1'   : '0000000000000000000000000000000000000000',
         'enable' : True,
+        'install': False,
         'option1': 'restore',
         'option2': 'None',
         'option3': 'None',
@@ -83,6 +86,7 @@ installers = (
         'url'   : 'http://www.atvmod.com',
         'sha1'  : '0000000000000000000000000000000000000000',
         'enable': False,
+        'install': False,
         'option1': 'linux_video',
         'option2': 'linux_ir',
         'option3': 'None',
@@ -93,6 +97,7 @@ installers = (
         'url'    : 'http://www.boxee.org',
         'sha1'   : '0000000000000000000000000000000000000000',
         'enable' : False,
+        'install': False,
         'option1': 'linux_video',
         'option2': 'linux_ir',
         'option3': 'None',
@@ -103,6 +108,7 @@ installers = (
         'url'    : 'http://elisa.fluendo.com/',
         'sha1'   : '0000000000000000000000000000000000000000',
         'enable' : False,
+        'install': False,
         'option1': 'linux_video',
         'option2': 'linux_ir',
         'option3': 'None',
@@ -113,6 +119,7 @@ installers = (
         'url'    : 'http://www.atvmod.com',
         'sha1'   : '0000000000000000000000000000000000000000',
         'enable' : False,
+        'install': False,
         'option1': 'linux_video',
         'option2': 'linux_ir',
         'option3': 'None',
@@ -123,6 +130,7 @@ installers = (
         'url'    : 'http://www.atvmod.com',
         'sha1'   : '0000000000000000000000000000000000000000',
         'enable' : False,
+        'install': False,
         'option1': 'linux_video',
         'option2': 'linux_ir',
         'option3': 'None',
@@ -150,12 +158,12 @@ restore = (
 patchsticks = (
     {
         'name'   : 'AppleTV version 1.0',
-        'enable' : True,
+        'enable' : False,
         'depends': 'atv-1.0',
     },
     {
         'name'   : 'AppleTV version 1.1',
-        'enable' : True,
+        'enable' : False,
         'depends': 'atv-1.1',
     },
     {
@@ -183,24 +191,27 @@ packages = (
         'install': True,
         'url'    : 'http://www.atvmod.com',
         'type'   : 'package',
+        'pkgname': 'dropbear',
         'loader' : 'install.sh'
     },
     {
         'name'   : 'ATVFiles',
-        'enable' : True,
+        'enable' : False,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
-        'install': 'True',
+        'install': False,
         'url'    : 'http://ericiii.net/sa/appletv/ATVFiles-1.1.0.run',
         'type'   : 'plugin',
+        'pkgname': 'ATVFiles',
         'loader' : 'sudo sh ATVFiles-1.0.1.run'
     },
     {
         'name'   : 'ATVLoader',
-        'enable' : True,
+        'enable' : False,
         'depends': 'atv-1.0, atv-1.1',
         'install': False,
         'url'    : 'http://alanquatermain.net/projects/ATVLoader.zip',
         'type'   : 'plugin',
+        'pkgname': 'ATVLoader',
         'loader' : 'sudo installer -pkg ATVLoader.pkg -target /'
     },
     {
@@ -210,6 +221,7 @@ packages = (
         'install': False,
         'url'    : 'http://awkwardtorrents.googlecode.com/files/ATVrtorrent.frappliance.1.0.2.zip',
         'type'   : 'plugin',
+        'pkgname': 'ATVTorrents',
         'loader' : 'install.sh'
     },
     {
@@ -219,6 +231,7 @@ packages = (
         'install': False,
         'url'    : 'http://brandon-holland.com/downloads/couchsurfer/couchsurfer-0.3-2.0-installer.zip',
         'type'   : 'plugin',
+        'pkgname': 'CouchSurfer',
         'loader' : 'install.sh'
     },
     {
@@ -228,6 +241,7 @@ packages = (
         'install': False,
         'url'    : '/Applications/EyeTV.app)',
         'type'   : 'application',
+        'pkgname': 'EyeTV',
         'loader' : 'install.sh'
     },
     {
@@ -237,17 +251,19 @@ packages = (
         'install': False,
         'url'    : 'http://users.pandora.be/bruno.keymolen/HomeMediaCloud_ATV_Take2.zip',
         'type'   : 'plugin',
+        'pkgname': 'MediaCloud',
         'loader' : 'install.sh'
         
     },
     {
         'name'   : 'iScripts',
-        'enable' : True,
+        'enable' : False,
         'depends': 'atv-2.0, atv-2.1',
         'depends': 'None',
         'install': False,
         'url'    : 'http://iscripts.googlecode.com/files/Scripts-1.2.2.tar.gz',
         'type'   : 'plugin',
+        'pkgname': 'iScripts',
         'loader' : 'install.sh'
     },
     {
@@ -257,6 +273,7 @@ packages = (
         'install': False,
         'url'    : 'http://www.atvmod.com',
         'type'   : 'plugin',
+        'pkgname': 'Jamen',
         'loader' : 'install.sh'
     },
     {
@@ -266,15 +283,17 @@ packages = (
         'install': False,
         'url'    : 'http://rtorrent-appletv.googlecode.com/files/rtorrent-0.7.9-osx.tar.bz2',
         'type'   : 'plugin',
+        'pkgname': 'rTorrent',
         'loader' : 'install.sh'
     },
     {
         'name'   : 'Sapphire',
-        'enable' : True,
+        'enable' : False,
         'depends': 'atv-2.0, atv-2.1',
         'install': False,
         'url'    : 'http://appletv.nanopi.net/Files/Sapphire_1.0b6.1.zip',
         'type'   : 'plugin',
+        'pkgname': 'Sapphire',
         'loader' : 'install.sh'
     },
     {
@@ -284,15 +303,17 @@ packages = (
         'install': False,
         'url'    : 'http://brandon-holland.com/downloads/skypeplugin/skypeplugin-0.1-bin.tar.gz',
         'type'   : 'plugin',
+        'pkgname': 'Skype',
         'loader' : 'install.sh'
     },
     {
         'name'   : 'NitoTV',
-        'enable' : True,
+        'enable' : False,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
-        'install': True,
+        'install': False,
         'url'    : 'http://nitosoft.com/nitoTVInstaller.zip',
         'type'   : 'plugin',
+        'pkgname': 'NitoTV',
         'loader' : 'install.sh'
     },
     {
@@ -302,9 +323,19 @@ packages = (
         'install': True,
         'url'    : 'http://downloads.sourceforge.net/xbmc/XBMC_for_Mac-Atlantis-Beta_1.dmg',
         'type'   : 'plugin',
+        'pkgname': 'XBMCLauncher',
         'loader' : 'install.sh'
     },
-    
+    {
+        'name'   : 'Boxee for Mac',
+        'enable' : True,
+        'depends': 'atv-2.0, atv-2.1',
+        'install': True,
+        'url'    : 'http://apt.boxee.tv/boxee-tiger3.dmg',
+        'type'   : 'plugin',
+        'pkgname': 'BoxeeLauncher',
+        'loader' : 'install.sh'
+    },
     {
         'name'   : 'USB Mass Storage',
         'enable' : False,
@@ -312,6 +343,7 @@ packages = (
         'install': False,
         'url'    : 'http://www.atvmod.com',
         'type'   : 'package',
+        'pkgname': 'USBMassStorage',
         'loader' : 'install.sh'
     },
     {
@@ -321,6 +353,7 @@ packages = (
         'install': False,
         'url'    : 'http://www.atvmod.com',
         'type'   : 'package',
+        'pkgname': 'AppleFileServices',
         'loader' : 'install.sh'
     },
     {
@@ -330,24 +363,27 @@ packages = (
         'install': False,
         'url'    : 'http://www.atvmod.com',
         'type'   : 'package',
+        'pkgname': 'SMBFileServices',
         'loader' : 'install.sh'
     },
     {
         'name'   : 'Composite NTSC video',
-        'enable' : True,
+        'enable' : False,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
         'install': False,
         'url'    : 'http://www.atvmod.com',
         'type'   : 'special',
+        'pkgname': 'CompositeNTSC',
         'loader' : 'install.sh'
     },
     {
         'name'   : 'Composite PAL video',
-        'enable' : True,
+        'enable' : False,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
         'install': False,
         'url'    : 'http://www.atvmod.com',
         'type'   : 'special',
+        'pkgname': 'CompositePAL',
         'loader' : 'install.sh'
     },
 )
