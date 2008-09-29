@@ -20,7 +20,7 @@ touch /OSBoot/.readwrite
 
 # symlink /mnt/rootfs to /payloads to make the scripts easier to read
 echo "       * symlinking /mnt/rootfs -> /payloads"
-ln -s /mnt/rootfs /payloads
+ln -s /mnt/rootfs/payloads /payloads
 
 echo "       * create staging directory for install scripts"
 mkdir -p /OSBoot/Users/Frontrow/staging
@@ -33,7 +33,7 @@ for script in $( find /payloads/ -name install.sh -print ); do
 done
 
 
-sync &>/dev/null
+sync
 umount /OSBoot/mnt
 umount /OSBoot
 echo "        * Please unplug your Apple TV to reboot/reset the device."

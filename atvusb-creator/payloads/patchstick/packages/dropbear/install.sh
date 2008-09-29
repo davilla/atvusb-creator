@@ -8,7 +8,7 @@ if [ -d /staging ]; then
   rm -rf /staging/*
 
   # unpack the package
-  tar -xzf /payloads/packages/dropbear/dropbear.tar.gz -C /staging/
+  tar -xzf /payloads/patchstick/packages/dropbear/dropbear.tar.gz -C /staging/
 
   # install package
   cp /staging/dropbear/System/Library/LaunchDaemons/com.atvMod.dropbear.plist /OSBoot/System/Library/LaunchDaemons/
@@ -25,12 +25,12 @@ if [ -d /staging ]; then
   chmod 755 /OSBoot/usr/lib/libarmfp.dylib
 
   cp /staging/dropbear/Users/frontrow/{.bash_login,.dropbear_banner} /OSBoot/Users/frontrow/
-  chown frontrow:frontrow /OSBoot/Users/frontrow/{.bash_login,.dropbear_banner}
+  chown 501:501 /OSBoot/Users/frontrow/{.bash_login,.dropbear_banner}
   chmod 755 /OSBoot/Users/frontrow/{.bash_login,.dropbear_banner}
 
   cp /staging/dropbear/usr/libexec/{dropbear-keygen-wrapper,sftp-server} /OSBoot/usr/libexec/
-  chown 0:0 /mnt/OSBoot/usr/libexec/{dropbear-keygen-wrapper,sftp-server}
-  chmod 755 /mnt/OSBoot/usr/libexec/{dropbear-keygen-wrapper,sftp-server}
+  chown 0:0 /OSBoot/usr/libexec/{dropbear-keygen-wrapper,sftp-server}
+  chmod 755 /OSBoot/usr/libexec/{dropbear-keygen-wrapper,sftp-server}
 
   # always clean staging directory when done
   rm -rf /staging/*

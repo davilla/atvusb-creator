@@ -8,12 +8,12 @@ if [ -d /staging ]; then
   rm -rf /staging/*
 
   # unpack the package
-  tar -xzf /payloads/packages/binutils/binutils.tar.gz -C /staging/
+  tar -xzf /payloads/patchstick/packages/binutils/binutils.tar.gz -C /staging/
 
   # install package
   chown 0:0 /staging/binutils/*
   chmod 755 /staging/binutils/*
-  chmod +s /mnt/OSBoot/usr/bin/top
+  chmod +s  /staging/binutils/top
   rsync /staging/binutils/* /OSBoot/usr/bin/
 
   # always clean staging directory when done

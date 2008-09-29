@@ -17,7 +17,17 @@ gpt create /dev/disk1
 # findfs LABEL=PATCHSTICK
 /dev/sdb1
 
-mount -t vfat -o shortname=mixed /dev/sdb1 tmp
+mount -t vfat -o shortname=mixed /dev/sdb1 /mnt/rootfs
+
+# blkid /dev/sdb1
+/dev/sdb1: LABEL="PATCHSTICK" UUID="48DE-9878" TYPE="vfat" 
+
+# blkid /dev/sdb2 
+/dev/sdb2: TYPE="hfsplus" 
+
+# findfs LABEL=PATCHSTICK
+/dev/sdb1
+
 
 rm -rf staging/*
 cp Archive.pax.gz staging

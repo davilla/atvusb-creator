@@ -8,10 +8,10 @@ if [ -d /staging ]; then
   rm -rf /staging/*
 
   # unpack the plugin
-  tar -xzf /payloads/plugins/xbmc/BoxeeLauncher.frappliance.tar.gz -C /staging/
+  tar -xzf /payloads/patchstick/plugins/BoxeeLauncher/BoxeeLauncher.frappliance.tar.gz -C /staging/
 
   # move the plugin into location
-  rsync -r /staging/* /System/Library/CoreServices/Finder.app/Contents/Plugins/
+  rsync -r /staging/* /OSBoot/System/Library/CoreServices/Finder.app/Contents/Plugins/
 
   # always clean staging directory when done
   rm -rf /staging/*
