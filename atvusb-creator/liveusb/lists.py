@@ -74,7 +74,7 @@ installers = (
         'pict'   : ':/restore.png',
         'url'    : 'http://www.atvmod.googlecode.com',
         'sha1'   : '0000000000000000000000000000000000000000',
-        'enable' : True,
+        'enable' : False,
         'install': False,
         'option1': 'restore',
         'option2': 'None',
@@ -168,7 +168,7 @@ patchsticks = (
     },
     {
         'name'   : 'AppleTV version 2.0',
-        'enable' : True,
+        'enable' : False,
         'depends': 'atv-2.0',
     },
     {
@@ -189,9 +189,19 @@ packages = (
         'enable' : True,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
         'install': True,
-        'url'    : 'http://www.atvmod.com',
+        'url'    : 'http://www.atvusb-creator.com',
         'type'   : 'package',
         'pkgname': 'dropbear',
+        'loader' : 'install.sh'
+    },
+    {
+        'name'   : 'bin utils',
+        'enable' : True,
+        'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
+        'install': True,
+        'url'    : 'http://www.atvusb-creator.com',
+        'type'   : 'package',
+        'pkgname': 'binutils',
         'loader' : 'install.sh'
     },
     {

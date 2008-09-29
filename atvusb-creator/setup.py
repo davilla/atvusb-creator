@@ -12,10 +12,11 @@ DATA_FILES = [
   'qt.conf',
   'tools',
   'payloads',
-  '../staging',
-  '../downloads',
   ]
-OPTIONS = {'argv_emulation': True}
+OPTIONS = {'argv_emulation': True,
+           'iconfile': 'data/atvusb.icns',
+           'plist': 'data/Info.plist', 
+          }
 
 setup(
     app=APP,
