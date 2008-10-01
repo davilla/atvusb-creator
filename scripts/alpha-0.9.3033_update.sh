@@ -23,10 +23,10 @@ if [ -e $DISKIMAGE ]; then
   # handle any post-install items here
 
   # clean up
-  if [ -e /Users/Frontrow/Movies/boxee-tiger3 ]; then
+  #if [ -e /Users/Frontrow/Movies/boxee-tiger3 ]; then
   # something makes this symlink during install so zap it.
   echo $PW | sudo -S rm /Users/Frontrow/Movies/boxee-tiger3
-  fi
+  #fi
 
   # restore OSBoot read/write settings
   if [ "$REMOUNT" = "1" ]; then
