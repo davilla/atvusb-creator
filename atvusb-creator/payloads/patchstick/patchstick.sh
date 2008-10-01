@@ -28,7 +28,7 @@ ln -s /OSBoot/Users/Frontrow/staging /staging
 
 # 
 for script in $( find /payloads/ -name install.sh -print ); do
-  echo $script
+  #echo $script
   /bin/bash $script
 done
 

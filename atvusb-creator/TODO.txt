@@ -1,8 +1,7 @@
 atvusb-creator
 
 OSX
- Base install functional under both local and downloaded dmg.
- py2app not tested
+ Functional
 
 Linux
  Not functional yet.
@@ -19,4 +18,3 @@ TODO:
 
  3) Another re-org once Linux and Windows are functional, separate python objects are ok but there's lots of identical code that could be combined in the base class.
 
- 4) re-org the usb disk image and hfs partition image. Instead of doing the dd twice, copy the usb disk image, then dd hfs partition into the copy using and offset and count. The dd that onto the disk. This eliminated the double dd onto the physical flash device.
