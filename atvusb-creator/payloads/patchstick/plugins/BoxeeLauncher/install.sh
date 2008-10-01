@@ -12,7 +12,7 @@ if [ -d /staging ]; then
 
   # move the plugin into location
   if [ -d /OSBoot/System/Library/CoreServices/Finder.app/Contents/Plugins/BoxeeLauncher.frappliance ]; then
-    rm -rf /OSBoot/System/Library/CoreServices/Finder.app/Contents/Plugins/
+    rm -rf /OSBoot/System/Library/CoreServices/Finder.app/Contents/Plugins/BoxeeLauncher.frappliance
   fi
   rsync -r /staging/* /OSBoot/System/Library/CoreServices/Finder.app/Contents/Plugins/
 
