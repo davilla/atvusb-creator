@@ -11,32 +11,43 @@ mkdir /OSBoot
 fsck.hfsplus -f /dev/sda3
 mount -t hfsplus -o rw,force /dev/sda3 /OSBoot
 
-echo "       * mounting Media partition"
-fsck.hfsplus -f /dev/sda4
-mount -t hfsplus -o rw,force /dev/sda4 /OSBoot/mnt
- 
-echo "        * keeping the OSBoot partition r/w for plugins"
-touch /OSBoot/.readwrite
+# if we successfully mount /OSBoot 
+if [ -d "/OSBoot/dev" ]; then
+	# symlink /mnt/rootfs to /payloads to make the scripts easier to read
+	echo "       * symlinking /mnt/rootfs -> /payloads"
+	ln -s /mnt/rootfs/payloads /payloads
 
-# symlink /mnt/rootfs to /payloads to make the scripts easier to read
-echo "       * symlinking /mnt/rootfs -> /payloads"
-ln -s /mnt/rootfs/payloads /payloads
+	echo "        * keeping the OSBoot partition r/w for plugins"
+	touch /OSBoot/.readwrite
 
-echo "       * create staging directory for install scripts"
-mkdir -p /OSBoot/Users/Frontrow/staging
-ln -s /OSBoot/Users/Frontrow/staging /staging
+	echo "       * mounting Media partition"
+	fsck.hfsplus -f /dev/sda4
+	mount -t hfsplus -o rw,force /dev/sda4 /OSBoot/mnt
+	
+	if [ -d "/OSBoot/Users/frontrow" ]; then
+		echo "       * create staging directory for install scripts"
+		mkdir -p /OSBoot/Users/frontrow/staging
+		ln -s /OSBoot/Users/frontrow/staging /staging
 
-# 
-for script in $( find /payloads/ -name install.sh -print ); do
-  #echo $script
-  /bin/bash $script
-done
+		for script in $( find /payloads/ -name install.sh -print ); do
+ 			/bin/bash "${script}" 
+		done
+	else 
+		echo "        * error mounting Media partition"
+	fi	
+else 
+	echo "        * error mounting OSBoot partition"
+fi
 
-
+if [ -d "/OSBoot/Users/frontrow/staging" ]; then
+	echo "       * removing staging directory"
+	rm -rf /OSBoot/Users/frontrow/staging
+fi
 sync
 umount /OSBoot/mnt
 umount /OSBoot
 echo "        * Please unplug your Apple TV to reboot/reset the device."
-echo "        * Please ssh into Apple TV and see /.upgrade.log and check for errors."
-echo "        * To ssh: ssh frontrow@appletv.local  Password: frontrow"
+echo "        * To connect to your Apple TV, plug in device, wait 3 minutes, then open"
+echo "          Terminal or an ssh client (putty), and type: ssh frontrow@appletv.local"
+echo "        * When prompted for a password, enter: frontrow"
 sleep 100000
