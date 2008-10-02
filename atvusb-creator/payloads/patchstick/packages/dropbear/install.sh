@@ -1,20 +1,21 @@
 #!/bin/bash
 
+$PACKAGE="dropbear" 
+
 # check that staging directory exists
-if [ -d /staging ]; then
-  echo "       * installing dropbear (ssh)"
+if [ -d "/staging" ]; then
+  echo "       * installing ${PACKAGE}"
 
   # clean staging directory
   rm -rf /staging/*
 
   # unpack the package
-  tar -xzf /payloads/patchstick/packages/dropbear/dropbear.tar.gz -C /staging/
+  tar -xzf /payloads/patchstick/packages/${PACKAGE}/${PACKAGE}.tar.gz -C /staging/
 
-  # install package
+  # begin non-standard install routines
   cp /staging/dropbear/System/Library/LaunchDaemons/com.atvMod.dropbear.plist /OSBoot/System/Library/LaunchDaemons/
   chown 0:0 /OSBoot/System/Library/LaunchDaemons/com.atvMod.dropbear.plist
   chmod 755 /OSBoot/System/Library/LaunchDaemons/com.atvMod.dropbear.plist
-
 
   cp /staging/dropbear/usr/bin/{dbclient,dropbear,dropbearconvert,dropbearkey,scp} /OSBoot/usr/bin/
   chown 0:0 /OSBoot/usr/bin/{dbclient,dropbear,dropbearconvert,dropbearkey,scp}
