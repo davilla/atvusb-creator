@@ -10,7 +10,7 @@ echo "        --- AppleTV Backup Stick by ATVUSB-Creator ---"
 BKUPDIR="/mnt/rootfs/payloads/backup"
 MEDIA="/media/Scratch/Users/frontrow"
  
-if [ -d ${BKUPDIR} ]; then
+if [ -d "${BKUPDIR}" ]; then
 	echo "        * backup location found!"
 	if [ -e "${BKUPDIR}/recovery.tar.gz" ]; then
 		echo "        * Error: It appears a backup has already run."
@@ -32,7 +32,6 @@ if [ -d ${BKUPDIR} ]; then
 			if [ -e "/src/OS.dmg" ]; then
 				echo "        * backing up recovery partition..."
 				cp -arpf /src/* /staging
-				umount /src
 				parted -s /dev/sda unit s print > /staging/org_gtp.txt
 				tar -C /staging -czvf ${BKUPDIR}/recovery.tar.gz `ls /staging`
 				echo "        * backup complete!"
