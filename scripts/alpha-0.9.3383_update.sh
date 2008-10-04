@@ -12,7 +12,7 @@ if [ -e $DISKIMAGE ]; then
   # Check if / is mounted read only
   if mount | grep ' on / '  | grep -q 'read-only'; then
     REMOUNT=1
-    /sbin/mount -uw /
+    echo $PW | sudo -S /sbin/mount -uw /
   fi
 
   # install xbmc app
@@ -21,6 +21,8 @@ if [ -e $DISKIMAGE ]; then
   echo $PW | sudo -S hdiutil detach /Volumes/boxee-0.9.3383
 
   # handle any post-install items here
+  #sync to disk, just in case...
+  /bin/sync
 
   # clean up
   #if [ -e /Users/Frontrow/Movies/boxee-0.9.3383 ]; then
@@ -30,7 +32,7 @@ if [ -e $DISKIMAGE ]; then
 
   # restore OSBoot read/write settings
   if [ "$REMOUNT" = "1" ]; then
-    /sbin/mount -ur /
+    echo $PW | sudo -S /sbin/mount -ur /
   fi
 
   exit 0
