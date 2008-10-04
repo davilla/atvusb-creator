@@ -12,5 +12,17 @@
 		<key>Name</key>
 		<string>Boxee alpha 0.9.3383</string>
 	</dict>
+	<dict>
+		<key>Name</key>
+		<string>XBMC/Boxee Launcher 0.2</string>
+		<key>Type</key>
+		<string>Launcher</string>
+		<key>URL</key>
+		<string>http://atv-xbmc-launcher.googlecode.com/files/XBMCLauncher-0.2-debug.run</string>
+		<key>UpdateScript</key>
+		<string>http://atv-xbmc-launcher.googlecode.com/svn/tags/xbmc-info/scripts/launcher-update-0.2.sh</string>
+		<key>MD5</key>
+		<string>bd701a1ebc3d65b01ebf51652b3d9fbd</string>
+	</dict>
 </array>
 </plist>
