@@ -33,7 +33,15 @@ if [ -d "${BKUPDIR}" ]; then
 				echo "        * backing up recovery partition..."
 				cp -arpf /src/* /staging
 				parted -s /dev/sda unit s print > /staging/org_gtp.txt
-				tar -C /staging -czvf ${BKUPDIR}/recovery.tar.gz `ls /staging`
+				for i in /staging/*; do 
+					file=`echo $i | sed s/\\\/staging\\\///` 
+					tar -C /staging -rf ${BKUPDIR}/recovery.tar "$file"
+				done
+				if [ -e "${BKUPDIR}/recovery.tar" ]; then
+					echo "        * compressing backup image..."
+					gzip ${BKUPDIR}/recovery.tar
+				fi
+				#tar -C /staging -czvf ${BKUPDIR}/recovery.tar.gz `ls /staging`
 				echo "        * backup complete!"
 				echo "        * make sure you save payloads/backup/recovery.tar.gz if you wish to restore your Apple TV back to factory condition."
 			else 
