@@ -13,7 +13,7 @@ FILES="OS.dmg boot.efi com.apple.Boot.plist mach_kernel.prelink BootLogo.png"
 if [ -d "${REBDIR}" ]; then 
     for file in $FILES; do
 	if [ ! -e "${REBDIR}/$file" ]; then
-		echo "        * Error: ${REBDIR}/$file not found.  Please verify these were extracted from the OS.dmg"
+		echo "        * Error: ${REBDIR}/$file not found.  Please verify these were extracted from the OS.dmg.  Aborting rebuild."
 		exit 1
 	fi
     done
@@ -51,12 +51,12 @@ if [ -d "${REBDIR}" ]; then
         cp -arp ${REBDIR}/* /dst/
         sync &>/dev/null
         umount /dst
-        echo "        * Restore complete!  Please unplug your Apple TV, plug back in, "
+        echo "        * Rebuild complete!  Please unplug your Apple TV, plug back in, "
         echo "          and perform a factory restore."
      else
-	echo "        * Error: Incorrect values for disk size.  Aborting."
+	echo "        * Error: Incorrect values for disk size.  Aborting rebuild."
      fi
 else 
-	echo "        * Error: Unable to locate rebuild dir: ${REBDIR}"
+	echo "        * Error: Unable to locate rebuild dir: ${REBDIR}.  Aborting rebuild."
 fi
 sleep 100000
