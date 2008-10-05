@@ -1,6 +1,6 @@
 #!/bin/bash
 
-$PACKAGE="dropbear" 
+PACKAGE="dropbear" 
 
 # check that staging directory exists
 if [ -d "/staging" ]; then
