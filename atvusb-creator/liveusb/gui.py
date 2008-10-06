@@ -18,9 +18,12 @@
 #
 # Author(s): Luke Macken <lmacken@redhat.com>
 #            Kushal Das <kushal@fedoraproject.org>
+#
+# ATV-USB-Creator fork:
+#            Scott Davilla <davilla@4pi.com>
 
 """
-A cross-platform graphical interface ATV-Bootloader
+A cross-platform graphical interface ATVUSB-CREATOR
 """
 
 import os
@@ -81,7 +84,8 @@ class ReleaseDownloader(QtCore.QThread):
         try:
             dst = os.path.join(self.live.downloads, os.path.basename(self.url) )
             if os.path.exists(dst):
-                os.file.remove(dst)
+                #os.file.remove(dst)
+                os.remove(dst)
             dmg = grabber.urlgrab(self.url, filename=dst, reget='simple')
         except URLGrabError, e:
             self.emit(QtCore.SIGNAL("dlcomplete(PyQt_PyObject)"), e.strerror)

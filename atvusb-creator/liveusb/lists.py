@@ -1,10 +1,14 @@
+# openssl dgst -sha1
 atv_dmg_info = (
     {
-        'name': 'AppleTV Update 2.02',
+        'name': 'AppleTV Update 2.1',
         'url' : 'http://mesu.apple.com/data/OS/061-4632.2080414.gt5rW/2Z694-5428-3.dmg',
         'sha1': '65151a796164f202f0e0aa3554c5e9cad74e149d',
     },
 )
+#        'name': 'AppleTV Update 2.2',
+#        'url' : 'http://mesu.apple.com/data/OS/061-5262.20081002.tvap9/2Z694-5499.dmg',
+#        'sha1': 'ed7256ee03b3a3fc5e0004089157f9b3ff3e6d4e',
 
 osx_dmg_info = (
     {
