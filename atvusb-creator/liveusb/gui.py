@@ -183,14 +183,17 @@ class LiveUSBThread(QtCore.QThread):
                                         "the --noverify argument to bypass this "
                                         "verification check.")
                             return
-                self.status("Extracting boot.efi ...")
                 self.live.extract_bootefi(progress=self)
             #
-            self.status("Creating USB Image...")
-            self.live.create_image(progress=self)
+            self.live.extract_recovery(progress=self)
+            status = self.live.create_image(progress=self)
             #
             duration = str(datetime.now() - now).split('.')[0]
-            self.status("Complete! (%s)" % duration)
+            if (status == False): 
+                self.status("Failed! (%s)" % duration)
+            else:
+                self.status("Complete! (%s)" % duration)
+            
         except LiveUSBError, e:
             self.status(str(e))
             self.status("ATV-Bootloader creation failed!")
@@ -258,7 +261,7 @@ class LiveUSBDialog(QtGui.QDialog, Ui_Dialog):
         for info in self.live.installers:
             self.installerMenu.addItem(info['name'])
             #self.installerMenu.item[self.installerMenu.currentIndex].setSelectable(False)
-        self.installerMenu.setCurrentIndex(0);
+        self.installerMenu.setCurrentIndex(1);
 
     #---------------------------------------------------------------------------------
     def set_installer_pict(self):
@@ -497,7 +500,6 @@ class LiveUSBDialog(QtGui.QDialog, Ui_Dialog):
                             "you move your DMG to the root of your drive "
                             "(ie: C:\)")
 
-            self.live.log.info("DMG selected: %s" % repr(self.live.dmg))
             self.statusInfoEdit.append(os.path.basename(self.live.dmg) + ' selected')
 
     #---------------------------------------------------------------------------------

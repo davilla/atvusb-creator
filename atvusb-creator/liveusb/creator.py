@@ -91,6 +91,7 @@ class LiveUSBCreator(object):
         
         self.staging = os.path.join(abspath, 'staging')
         self.downloads = os.path.join(abspath, 'downloads')
+        self.flashmount = tempfile.mkdtemp()
 
         if not os.path.exists(self.staging):
             os.mkdir(self.staging)
@@ -205,7 +206,19 @@ class LiveUSBCreator(object):
             return checksum.hexdigest() == info['sha1']
 
     #---------------------------------------------------------------------------------
+    def extract_recovery(self, progress):
+        # extract the hfs recovery image
+        hfs_image = os.path.join(self.staging, hfs_info[0]['name'])
+        if not os.path.exists(hfs_image):
+            progress.status("Extracting recovery seed ...")
+            image_dst = os.path.join(self.staging)
+            archive = os.path.join(self.payloads, hfs_info[0]['file'])
+            self.extract_zip_image(progress, archive, hfs_image, image_dst)
+
+
+    #---------------------------------------------------------------------------------
     def create_image(self, progress):
+        progress.status("Creating USB Image...")
         # unmount this disk
         self.umount_disk(progress)
 
@@ -233,7 +246,7 @@ class LiveUSBCreator(object):
         self.dd_inject(progress, hfs_image, 0, usb_image, usb_info[0]['p2_bgn']/512, 512, usb_info[0]['p2_cnt']/512)
         #
         # dd the usb image to the USB flash drive
-        progress.status("Creating USB Flash" )
+        progress.status("Imaging to USB Flash" )
         self.dd_disk_image(progress, usb_image)
         
         # now install the payloads onto the "PATCHSTICK" volume
@@ -241,17 +254,18 @@ class LiveUSBCreator(object):
         
         for installer in installers:
             if installer['install']:
-                self.install_payload(installer)
+                self.install_payload(installer, self.volume_path)
                 break
                 
                 
         #self.umount_disk(progress)
-
+        
+        return True
 
     #---------------------------------------------------------------------------------
-    def install_payload(self, installer):
-        self.log.debug('self.volume_path: %s' % self.volume_path)
-        if os.path.exists(self.volume_path):
+    def install_payload(self, installer, mount_point):
+        self.log.debug('mount_point: %s' % mount_point)
+        if os.path.exists(mount_point):
             if installer['name'] == "ATV-Bootloader":
                 pass
 
@@ -259,7 +273,7 @@ class LiveUSBCreator(object):
                 # copy patchstick.sh script
                 src = os.path.join(self.payloads, 'patchstick', 'patchstick.sh')
                 self.log.debug('src: %s' % src)
-                shutil.copy(src, self.volume_path)
+                shutil.copy(src, mount_point)
             
                 # create payloads directories
                 
@@ -268,10 +282,10 @@ class LiveUSBCreator(object):
                     if package['install']:
                         if package['type'] == "package":
                             src = os.path.join(self.payloads, "patchstick", "packages", package['pkgname'])
-                            dst = os.path.join(self.volume_path, 'payloads', "patchstick", "packages", package['pkgname'])
+                            dst = os.path.join(mount_point, 'payloads', "patchstick", "packages", package['pkgname'])
                         elif package['type'] == "plugin":
                             src = os.path.join(self.payloads, "patchstick", "plugins", package['pkgname'])
-                            dst = os.path.join(self.volume_path, 'payloads', "patchstick", "plugins", package['pkgname'])
+                            dst = os.path.join(mount_point, 'payloads', "patchstick", "plugins", package['pkgname'])
 
                         self.log.debug('src: %s dst: %s' % (src, dst))
 
@@ -315,12 +329,24 @@ class LiveUSBCreator(object):
                 os_cmd = os.path.join('tools', 'osx', '7za ')
             else:
                 os_cmd = os.path.join('tools', 'linux', '7za ')
-            os_cmd = os_cmd + 'e -bd -y -o%s %s' %(image_dst, archive)
+            os_cmd = os_cmd + 'e -bd -y -o"%s" "%s"' %(image_dst, archive)
             #
-            progress.status("Extracting %s" %(os.path.basename(archive) ) )
+            progress.status("  extracting %s" %(os.path.basename(archive) ) )
             [status, rtn] = commands.getstatusoutput(os_cmd)
             if status:
-                self.log.warning("Unable to extract %s" %(os.path.basename(archive) ) )
+                self.log.warning(" unable to extract %s" %(os.path.basename(archive) ) )
+                print rtn
+                return
+
+    #---------------------------------------------------------------------------------
+    def extract_zip_image(self, progress, archive, image, image_dst):
+        if os.path.exists(archive) and not os.path.exists(image):
+            os_cmd = 'unzip "%s" -d "%s"' %(archive, image_dst)
+            #
+            progress.status("  extracting %s" %(os.path.basename(archive) ) )
+            [status, rtn] = commands.getstatusoutput(os_cmd)
+            if status:
+                self.log.warning("  unable to extract %s" %(os.path.basename(archive) ) )
                 print rtn
                 return
 
@@ -391,6 +417,21 @@ class LiveUSBCreator(object):
     #---------------------------------------------------------------------------------
     def extract_bootefi(self, progress):
         """ Extract boot.efi from the AppleTV Update DMG """
+        raise NotImplementedError
+
+    #---------------------------------------------------------------------------------
+    def partition_disk(self, progress):
+        """ Partition Disk """
+        raise NotImplementedError
+
+    #---------------------------------------------------------------------------------
+    def install_recovery(self, progress):
+        """ Install Recovery Partition Contents """
+        raise NotImplementedError
+
+    #---------------------------------------------------------------------------------
+    def install_patchstick(self, progress):
+        """ Install Patchstick Partition Contents """
         raise NotImplementedError
 
     #---------------------------------------------------------------------------------
@@ -480,10 +521,10 @@ class LinuxLiveUSBCreator(LiveUSBCreator):
     #---------------------------------------------------------------------------------
     def extract_bootefi(self, progress):
         """ Extract boot.efi from the AppleTV Update DMG """
+        progress.status("Extracting boot.efi ...")
         progress.update_progress(0)
         progress.set_max_progress(100)
         self.tmpdir = tempfile.mkdtemp()
-        self.log.info("Extracting boot.efi from DMG")
         self.popen('dmg2img %s' % self.dmg)
         self.dmg = os.path.extsep.join([self.dmg.split(os.path.extsep)[0], 'img'])
         progress.update_progress(33)
@@ -512,14 +553,15 @@ class LinuxLiveUSBCreator(LiveUSBCreator):
 class DarwinLiveUSBCreator(LiveUSBCreator):
 
     def __init__(self, opts):
-        super(LinuxLiveUSBCreator, self).__init__(opts)
-        self.volume_path = '/Volumes/PATCHSTICK'
+        super(DarwinLiveUSBCreator, self).__init__(opts)
  
     #---------------------------------------------------------------------------------
     def mount_disk(self, progress):
+        # mount_hfs /dev/disk1s1 downloads
         os_cmd = 'diskutil mountDisk %s' %(self.drive)
         [status, rtn] = commands.getstatusoutput(os_cmd)
         self.log.debug('%s %s' % (status, rtn))
+        progress.status("  mount_disk settling delay (10 seconds)")
         time.sleep(10)
 
     #---------------------------------------------------------------------------------
@@ -527,6 +569,8 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
         os_cmd = 'diskutil unmountDisk %s' %(self.drive)
         [status, rtn] = commands.getstatusoutput(os_cmd)
         self.log.debug('%s %s' % (status, rtn))
+        progress.status("  umount_disk settling delay (10 seconds)")
+        time.sleep(10)
 
     #---------------------------------------------------------------------------------
     def detect_removable_drives(self):
@@ -538,7 +582,7 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
             #print drive
             Protocol = None
             Ejectable = "No"
-            [status, rtn] = commands.getstatusoutput("diskutil info %s" %(drive) )
+            [status, rtn] = commands.getstatusoutput('diskutil info "%s"' %(drive) )
             driveinfo = rtn.split("\n")
             for info in driveinfo:
                 #print info
@@ -548,6 +592,8 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
                     Protocol = words[1].strip()
                 if words[0].strip() == "Ejectable":
                     Ejectable = words[1].strip()
+                if words[0].strip() == "Total Size":
+                    DiskSize = words[1].strip()
             if Protocol == "USB" and Ejectable == "Yes":
                 label = None
                 self.drives[drive] = {
@@ -561,115 +607,203 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
     #---------------------------------------------------------------------------------
     def extract_bootefi(self, progress):
         """ Extract boot.efi from the AppleTV Update DMG """
+        progress.status("Extracting boot.efi ...")
         progress.update_progress(0)
         progress.set_max_progress(100)
         # mount the dmg disk image
-        abspath = os.path.abspath(self.downloads)
-        #print abspath
-        [status, rtn] = commands.getstatusoutput("hdiutil attach %s -readonly -mountroot %s" %(self.dmg, abspath) )
+        mount_point = tempfile.mkdtemp()
+        os_cmd = 'hdiutil attach "%s" -readonly -mountroot "%s"' %(self.dmg, mount_point)
+        [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
             self.log.warning("Unable to mount device: %s" %(rtn) )
             return
         progress.update_progress(33)
         # copy boot.efi to downloads
-        bootefi_src = os.path.join(self.downloads, 'OSBoot', 'usr', 'standalone', 'i386', 'boot.efi')
+        bootefi_src = os.path.join(mount_point, 'OSBoot', 'usr', 'standalone', 'i386', 'boot.efi')
         shutil.copy(bootefi_src, self.bootefi)
         progress.update_progress(66)
         # unmount the dmg disk image
-        osboot = os.path.join(self.downloads, 'OSBoot')
-        abspath = os.path.abspath(osboot)
+        osboot = os.path.abspath( os.path.join(mount_point, 'OSBoot') )
         #print abspath
-        [status, rtn] = commands.getstatusoutput("hdiutil detach %s" %(abspath) )
+        [status, rtn] = commands.getstatusoutput('hdiutil detach "%s"' %(osboot) )
         if status:
             self.log.warning("Unable to unmount AppleTV Update DMG")
         progress.update_progress(100)
                         
+                        
     #---------------------------------------------------------------------------------
     def create_image(self, progress):
-        # unmount this disk
+        progress.status("Creating USB Flash Disk...")
+        progress.update_progress(0)
+        progress.set_max_progress(100)
+
+        # unmount the target disk
         self.umount_disk(progress)
 
+        # partition the target disk
+        progress.update_progress(25)
+        progress.status("  partition the target disk")
+        status = self.partition_disk(progress)
+        if (status == False):
+            progress.status("  partition_disk failed")
+            return status
+        
+        # install recovery onto target disk
+        progress.update_progress(50)
+        progress.status("  install recovery onto target disk")
+        status = self.install_recovery(progress)
+        if (status == False):
+            progress.status("  install_recovery failed")
+            return status
+        
+        # install patchstick onto target disk
+        progress.update_progress(74)
+        progress.status("  install patchstick onto target disk")
+        status = self.install_patchstick(progress)
+        if (status == False):
+            progress.status("  install_patchstick failed")
+            return status
+        
+        progress.update_progress(100)
+        #self.umount_disk(progress)
+        
+        return True
+
+    #---------------------------------------------------------------------------------
+    def partition_disk(self, progress):
         # create a GPT format direct on the flash drive
-        os_cmd = 'diskutil partitionDisk %s 3 GPTFormat ' %(self.drive)
-        os_cmd = os_cmd + '"HFS+" "PATCHSTICK" 485785600B '
+        os_cmd = 'diskutil partitionDisk %s 2 GPTFormat ' %(self.drive)
         os_cmd = os_cmd + '"HFS+" "Recovery" 26112000B '
-        os_cmd = os_cmd + '"Ext2" "empty" 1024B'
-        print os_cmd
+        os_cmd = os_cmd + '"MS-DOS FAT32" "PATCHSTICK" 485785600B'
+        #os_cmd = os_cmd + '"HFS+" "PATCHSTICK" 485785600B'
         [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
-            self.log.warning("Unable to partition device: %s" %(rtn) )
-            return
-        time.sleep(2)
+            progress.status("Unable to partition device: %s" %(rtn) )
+            return False
+            
+        time.sleep(10)
+        self.umount_disk(progress)
+        
+        if 'EFI' in rtn:
+            # disk is large enough for diskutil to automatically
+            # insert an EFI partition as the first partition
+            self.drive_efi = True;
+            self.drive_recovery = self.drive + 's2'
+            self.drive_patchstick = self.drive + 's3'
+            self.log.info("diskutil included EFI on device: %s" %(self.drive) )
+        else:
+            self.drive_efi = False;
+            self.drive_recovery = self.drive + 's1'
+            self.drive_patchstick = self.drive + 's2'
 
-        # extract the hfs recovery image
-        # created using "7za a -t7z atv_recv.7z atv_recv.img"
-        image_dst = os.path.join(self.staging)
-        archive = os.path.join(self.payloads, hfs_info[0]['file'])
-        hfs_image = os.path.join(self.staging, hfs_info[0]['name'])
-        self.extract_7z_image(progress, archive, hfs_image, image_dst)
+        return True
+
+    #---------------------------------------------------------------------------------
+    def install_recovery(self, progress):
+        # mount recovery partition at our specific mount point so we can find it
+        os_cmd = 'mount_hfs "%s" "%s"' %(self.drive_recovery , self.flashmount)
+        [status, rtn] = commands.getstatusoutput(os_cmd)
+        if status:
+            progress.status("Unable to mount recovery: %s" %(rtn) )
+            return False
 
         # mount the hfs_image
-        usb_image = os.path.join(self.staging, usb_info[0]['name'])
-        mount_point = os.path.abspath(self.downloads)
-        os_cmd = 'hdiutil attach %s -mountroot %s' %(hfs_image, mount_point)
-        print os_cmd
+        hfs_image = os.path.join(self.staging, hfs_info[0]['name'])
+        mount_point = tempfile.mkdtemp()
+        os_cmd = 'hdiutil attach "%s" -mountroot "%s"' %(hfs_image, mount_point)
         [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
-            self.log.warning("Unable to mount image: %s" %(rtn) )
-            return
+            os_cmd = 'umount -f "%s"' %(self.flashmount)
+            commands.getstatusoutput(os_cmd)
+            progress.status("Unable to mount image: %s" %(rtn) )
+            return False
 
-        volume_path = "/Volumes/Recovery"
+        progress.status("  copy files to target disk")
+        # copy contents of recovery seed to recovery on flash
         mount_point = mount_point + '/Recovery'
-        print mount_point
-        print volume_path
-        shutil.copy(mount_point + '/mach_kernel', volume_path)
-        shutil.copy(mount_point + '/BootLogo.png', volume_path)
-        shutil.copy(mount_point + '/com.apple.Boot.plist', volume_path)
-        shutil.copytree(mount_point + '/System', volume_path + '/System')
-        shutil.copy(self.bootefi, volume_path)
+        shutil.copy(mount_point + '/mach_kernel', self.flashmount)
+        shutil.copy(mount_point + '/BootLogo.png', self.flashmount)
+        shutil.copy(mount_point + '/com.apple.Boot.plist', self.flashmount)
+        shutil.copytree(mount_point + '/System', self.flashmount + '/System')
+        shutil.copy(self.bootefi, self.flashmount)
+        # always sync to force to physical disk
+        commands.getstatusoutput('sync')
         
         # unmount hfs_image
-        os_cmd = 'hdiutil detach %s' %(mount_point) 
-        print os_cmd
+        os_cmd = 'hdiutil detach "%s"' %(mount_point) 
         [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
-            self.log.warning("Unable to unmount image: %s" %(rtn) )
-            return
-        
+            progress.status("Unable to unmount image: %s" %(rtn) )
+            return False
+        #
+        # unmount recovery
+        os_cmd = 'umount -f "%s"' %(self.flashmount)
+        [status, rtn] = commands.getstatusoutput(os_cmd)
+        if status:
+            progress.status("Unable to unmount recovery: %s" %(rtn) )
+            return False
+        time.sleep(1)
+
+        progress.status("  remove recovery hfsplus GUID")
+        # change the partition to a appletv "recovery" type
+        # remove original hfsplus (contents are not changed)
+        if self.drive_efi == False:
+            os_cmd = 'gpt remove -i 1 %s' %(self.drive)
+        else:
+            os_cmd = 'gpt remove -i 2 %s' %(self.drive)
+        [status, rtn] = commands.getstatusoutput(os_cmd)
+        if status:
+            progress.status("Unable to remove fake recovery: %s" %(rtn) )
+            return False
+            
+        # gpt removal will remount all partitions so unmount it
+        time.sleep(10)
+        self.umount_disk(progress)
+
+        progress.status("  change recovery to real GUID")
+        # add back as recovery GUID
+        if self.drive_efi == False:
+            os_cmd = 'gpt add -b 40 -i 1 -s 51000 -t "5265636F-7665-11AA-AA11-00306543ECAC" %s' %(self.drive)
+        else:
+            os_cmd = 'gpt add -b 409640 -i 2 -s 51000 -t "5265636F-7665-11AA-AA11-00306543ECAC" %s' %(self.drive)
+        [status, rtn] = commands.getstatusoutput(os_cmd)
+        if status:
+            progress.status("Unable to add real recovery: %s" %(rtn) )
+            return False
+        print rtn
+        #
+        # adding will remount all partitions so unmount it again
+        time.sleep(10)
+        self.umount_disk(progress)
+
+        return True
+
+    #---------------------------------------------------------------------------------
+    def install_patchstick(self, progress):
+        os_cmd = 'mount_msdos "%s" "%s"' %(self.drive_patchstick , self.flashmount)
+        #os_cmd = 'mount_hfs "%s" "%s"' %(self.drive_patchstick , self.flashmount)
+        [status, rtn] = commands.getstatusoutput(os_cmd)
+        if status:
+            progress.status("Unable to mount PATCHSTICK: %s" %(rtn) )
+            return False
+
+        progress.status("  copy files to target disk")
         # now install the payloads onto the "PATCHSTICK" volume        
         for installer in installers:
             if installer['install']:
-                self.install_payload(installer)
+                self.install_payload(installer, self.flashmount)
                 break
-        [status, rtn] = commands.getstatusoutput('sync')
+        # always sync to force to physical disk
+        commands.getstatusoutput('sync')
                 
-        # change the 2nd partition to a appletv "recovery" type
-        self.umount_disk(progress)
-        time.sleep(1)
-        #
-        os_cmd = 'gpt remove -i 2 %s' %(self.drive)
-        print os_cmd
+        os_cmd = 'umount -f "%s"' %(self.flashmount)
         [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
-            self.log.warning("Unable to remove second partition: %s" %(rtn) )
-            return
-        time.sleep(1)
-        #
-        self.umount_disk(progress)
-        time.sleep(1)
-        os_cmd = 'gpt add -b 948840 -i 2 -s 51000 -t "5265636F-7665-11AA-AA11-00306543ECAC" %s' %(self.drive)
-        print os_cmd
-        [status, rtn] = commands.getstatusoutput(os_cmd)
-        if status:
-            self.log.warning("Unable to add recovery: %s" %(rtn) )
-            return
-        #
-        time.sleep(1)
+            progress.status("Unable to unmount PATCHSTICK: %s" %(rtn) )
+            return False
+            
+        return True
 
-        #
-        [status, rtn] = commands.getstatusoutput('sync')
-        
-        #self.umount_disk(progress)
     #---------------------------------------------------------------------------------
     def terminate(self):
         import signal
@@ -686,7 +820,7 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
 class WindowsLiveUSBCreator(LiveUSBCreator):
 
     def __init__(self, opts):
-        super(LinuxLiveUSBCreator, self).__init__(opts)
+        super(WindowsLiveUSBCreator, self).__init__(opts)
         # fixme
         self.volume_path = '/Volumes/PATCHSTICK'
  
@@ -707,13 +841,13 @@ class WindowsLiveUSBCreator(LiveUSBCreator):
     #---------------------------------------------------------------------------------
     def mount_disk(self, progress):
         # fixme
-        os_cmd = 'mountDisk %s' %(self.drive)
+        os_cmd = 'mountvol %s' %(self.drive)
         [status, rtn] = commands.getstatusoutput(os_cmd)
 
     #---------------------------------------------------------------------------------
     def umount_disk(self, progress):
         # fixme
-        os_cmd = 'umountDisk %s' %(self.drive)
+        os_cmd = 'mountvol %s /D' %(self.drive)
         [status, rtn] = commands.getstatusoutput(os_cmd)
 
     #---------------------------------------------------------------------------------
@@ -739,6 +873,7 @@ class WindowsLiveUSBCreator(LiveUSBCreator):
     #---------------------------------------------------------------------------------
     def extract_bootefi(self, progress):
         """ Extract boot.efi from DMG with 7-zip directly to the USB key """
+        progress.status("Extracting boot.efi ...")
         self.popen('7z x "%s" -x![BOOT] -y -o%s' % (self.dmg, self.drive))
 
     #---------------------------------------------------------------------------------

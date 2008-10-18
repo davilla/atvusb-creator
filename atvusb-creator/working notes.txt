@@ -232,5 +232,29 @@ sudo mkfs.vfat -F 32 -n "PATCHSTICK2" /dev/loop0
 sudo losetup -d /dev/loop0
 
 
+*******************************
+diskutil partitionDisk /dev/disk1 3 GPTFormat "HFS+" "Recovery" 26112000B "MS-DOS FAT32" "PATCHSTICK" 485785600B   "HFS+" "empty" 1024B
 
-diskutil partitionDisk /dev/disk2 2 GPTFormat "HFS+" "Recovery" 26112000B "MS-DOS FAT32" "PATCHSTICK" 485785600B
+
+
+gpt add -b 40 -i 1 -s 51000 -t "5265636F-7665-11AA-AA11-00306543ECAC" /dev/disk1
+
+gpt add -b 51040 -i 2 -s 948800 -t "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7" /dev/disk1
+
+
+*******************************
+sudo parted -s /dev/sdb mklabel msdos
+sudo parted -s /dev/sdb mkpart primary HFS 40s 51039s
+sudo parted -s /dev/sdb mkpart primary fat32 51040s 999839s
+
+
+diskutil partitionDisk /dev/disk1 2 MBRFormat "MS-DOS FAT32" "PATCHSTICK" 485785600B "MS-DOS FAT32" "RECOVERY" 26112000B
+
+*******************************
+hdiutil attach -nomount -noverify /Users/davilla/Desktop/dos_tmp.dmg
+
+diskutil partitionDisk /dev/disk1 1 MBRFormat "MS-DOS FAT32" "PATCHSTICK" 26112000B
+
+diskutil unmountDisk /dev/disk1
+
+hdiutil detach /dev/disk1

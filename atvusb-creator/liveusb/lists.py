@@ -41,7 +41,7 @@ usb_info = (
 hfs_info = (
     {
         'name'  : 'atv_recv.img',
-        'file'  : 'atv_recv.7z',
+        'file'  : 'atv_recv.img.zip',
         'sha1'  : '0000000000000000000000000000000000000000',
         'size'  : 51000 * 512,
         'p1_fs' : 'hfsplus',
