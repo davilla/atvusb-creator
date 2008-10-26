@@ -43,7 +43,7 @@ import subprocess
 from StringIO import StringIO
 from stat import ST_SIZE
 
-from liveusb.lists import atv_dmg_info, usb_info, hfs_info
+from liveusb.lists import atv_dmg_info, usb_info, hfs_info, fat_info
 from liveusb.lists import installers
 from liveusb.lists import backup, restore, patchsticks, packages
 from liveusb.lists import linux_video, linux_ir
@@ -211,10 +211,35 @@ class LiveUSBCreator(object):
         hfs_image = os.path.join(self.staging, hfs_info[0]['name'])
         if not os.path.exists(hfs_image):
             progress.status("Extracting recovery seed ...")
-            image_dst = os.path.join(self.staging)
             archive = os.path.join(self.payloads, hfs_info[0]['file'])
-            self.extract_zip_image(progress, archive, hfs_image, image_dst)
+            self.extract_7z_image(progress, archive, hfs_image, self.staging)
 
+    #---------------------------------------------------------------------------------
+    def extract_7z_image(self, progress, archive, image, image_dst):
+        if os.path.exists(archive) and not os.path.exists(image):
+            progress.status("  extracting %s" %(os.path.basename(archive) ) )
+            if sys.platform == "win32":
+                self.popen('7z e -bd -y -o"%s" "%s"' %(image_dst, archive) )
+                
+            elif sys.platform == "darwin":
+                os_cmd = os.path.join('tools', 'osx', '7za ')
+                os_cmd = os_cmd + 'e -bd -y -o"%s" "%s"' %(image_dst, archive)
+                #
+                progress.status("  extracting %s" %(os.path.basename(archive) ) )
+                [status, rtn] = commands.getstatusoutput(os_cmd)
+                if status:
+                    self.log.warning(" unable to extract %s" %(os.path.basename(archive) ) )
+                    print rtn
+                    
+            else:
+                os_cmd = os.path.join('tools', 'linux', '7za ')
+                os_cmd = os_cmd + 'e -bd -y -o"%s" "%s"' %(image_dst, archive)
+                #
+                progress.status("  extracting %s" %(os.path.basename(archive) ) )
+                [status, rtn] = commands.getstatusoutput(os_cmd)
+                if status:
+                    self.log.warning(" unable to extract %s" %(os.path.basename(archive) ) )
+                    print rtn
 
     #---------------------------------------------------------------------------------
     def create_image(self, progress):
@@ -222,17 +247,16 @@ class LiveUSBCreator(object):
         # unmount this disk
         self.umount_disk(progress)
 
-        image_dst = os.path.join(self.staging)
         # extract the base disk image
         # created using "7za a -t7z atv_512MB.7z atv_512MB.img"
         archive = os.path.join(self.payloads, usb_info[0]['file'])
         usb_image = os.path.join(self.staging, usb_info[0]['name'])
-        self.extract_7z_image(progress, archive, usb_image, image_dst)
+        self.extract_7z_image(progress, archive, usb_image, self.staging)
         # extract the hfs recovery image
         # created using "7za a -t7z atv_recv.7z atv_recv.img"
         archive = os.path.join(self.payloads, hfs_info[0]['file'])
         hfs_image = os.path.join(self.staging, hfs_info[0]['name'])
-        self.extract_7z_image(progress, archive, hfs_image, image_dst)
+        self.extract_7z_image(progress, archive, hfs_image, self.staging)
         #
         # overlay boot.efi into the hfs partition image
         # this will overwrite a dummy boot.efi
@@ -272,8 +296,11 @@ class LiveUSBCreator(object):
             elif installer['name'] == "ATV-Patchstick":
                 # copy patchstick.sh script
                 src = os.path.join(self.payloads, 'patchstick', 'patchstick.sh')
-                self.log.debug('src: %s' % src)
-                shutil.copy(src, mount_point)
+                self.log.debug('src: %s' %(src) )
+                if sys.platform == "win32":
+                    pass
+                else:
+                    shutil.copy(src, mount_point)
             
                 # create payloads directories
                 
@@ -287,22 +314,28 @@ class LiveUSBCreator(object):
                             src = os.path.join(self.payloads, "patchstick", "plugins", package['pkgname'])
                             dst = os.path.join(mount_point, 'payloads', "patchstick", "plugins", package['pkgname'])
 
-                        self.log.debug('src: %s dst: %s' % (src, dst))
+                        self.log.debug('src: %s dst: %s' %(src, dst) )
 
                         # copy payload to patchstick
-                        shutil.copytree(src, dst)
+                        if sys.platform == "win32":
+                            pass
+                        else:
+                            shutil.copytree(src, dst)
             elif installer['name'] == "ATV Factory Restore":
                 pass
                
     #---------------------------------------------------------------------------------
     def dd_disk_image(self, progress, image):
         if os.path.exists(image):
-            progress.status("Writing %s to %s" %(os.path.basename(image), self.drive) )
-            os_cmd =""
+            progress.status("  writing %s to %s" %(os.path.basename(image), self.drive) )
             if sys.platform == "win32":
-                os_cmd = os.path.join('tools', 'win', 'DD.exe ')
-                os_cmd = os_cmd + 'if=%s of=%s bs=1M' %(image, rdrive)
-                [status, rtn] = commands.getstatusoutput(os_cmd)
+                import win32file
+                # need to convert Letter driver to device path that dd.exe wants
+                device_path = win32file.QueryDosDevice(self.drive)
+                path = string.split(device_path, "\\")
+                dd_device_path = '\\\\?\\' + path[1] + '\\' + path[2] + '\\Partition0'
+                self.popen('dd-removable if="%s" of="%s" bs=1M --size' %(image, dd_device_path))
+
             elif sys.platform == "darwin":
                 # dd usb disk image onto physical usb flash device
                 # use the raw disk (rdisk) for speed
@@ -310,67 +343,81 @@ class LiveUSBCreator(object):
                 path = string.split(self.drive, "/")
                 rdrive = "/" + path[1] + "/r" + path[2]
                 [status, rtn] = commands.getstatusoutput("dd if=%s of=%s bs=1m" %(image, rdrive) )
+                if status:
+                    self.log.warning('Unable write usb disk image')
+                    print rtn
+                    
             else:
                 [status, rtn] = commands.getstatusoutput("dd if=%s of=%s bs=1M" %(image, self.drive) )
-            #
-            if status:
-                self.log.warning('Unable write usb disk image')
-                print rtn
-                return
-        pass
+                if status:
+                    self.log.warning('Unable write usb disk image')
+                    print rtn
 
     #---------------------------------------------------------------------------------
-    def extract_7z_image(self, progress, archive, image, image_dst):
-        if os.path.exists(archive) and not os.path.exists(image):
-            os_cmd =""
-            if sys.platform == "win32":
-                os_cmd = os.path.join('tools', 'win', '7z.exe ')
-            elif sys.platform == "darwin":
-                os_cmd = os.path.join('tools', 'osx', '7za ')
-            else:
-                os_cmd = os.path.join('tools', 'linux', '7za ')
-            os_cmd = os_cmd + 'e -bd -y -o"%s" "%s"' %(image_dst, archive)
-            #
-            progress.status("  extracting %s" %(os.path.basename(archive) ) )
-            [status, rtn] = commands.getstatusoutput(os_cmd)
-            if status:
-                self.log.warning(" unable to extract %s" %(os.path.basename(archive) ) )
-                print rtn
-                return
+    def inject(self, progress, ifile, ofile, ioffset, ooffset, size):
+        if os.path.exists(ifile) and os.path.exists(ofile):
+            progress.status("  inject %s" %(ifile) )
+            i = open(ifile, "rb")
+            o = open(ofile, "rb+")
 
-    #---------------------------------------------------------------------------------
-    def extract_zip_image(self, progress, archive, image, image_dst):
-        if os.path.exists(archive) and not os.path.exists(image):
-            os_cmd = 'unzip "%s" -d "%s"' %(archive, image_dst)
-            #
-            progress.status("  extracting %s" %(os.path.basename(archive) ) )
-            [status, rtn] = commands.getstatusoutput(os_cmd)
-            if status:
-                self.log.warning("  unable to extract %s" %(os.path.basename(archive) ) )
-                print rtn
-                return
+            i.seek(ioffset)
+            o.seek(ooffset)
+            #data = 
+            #o.write(data)
+            o.write( i.read(size) )
+
+            i.close()
+            o.close()
 
     #---------------------------------------------------------------------------------
     def dd_inject(self, progress, ifile, iseek, ofile, oseek, bs, count):
-        #print ifile
-        #print ofile
         if os.path.exists(ifile) and os.path.exists(ofile):
             if sys.platform == "win32":
-                os_cmd = os.path.join('tools', 'win', 'DD.exe conv=notrunc ')
+                progress.status("  dd_inject %s" %(ifile) )
+                self.popen('dd if=%s skip=%s of=%s seek=%s bs=%s count=%s' %(ifile, iseek, ofile, oseek, bs, count))
             else:
                 # 'dd' exists on all osx and linux distros
                 os_cmd = 'dd conv=notrunc '
-            #os_cmd = os_cmd + 'if=%s iseek=%s of=%s oseek=%s bs=%s count=%s' %(ifile, iseek, ofile, oseek, bs, count)
-            os_cmd = os_cmd + 'if=%s skip=%s of=%s seek=%s bs=%s count=%s' %(ifile, iseek, ofile, oseek, bs, count)
-            self.log.info(os_cmd)
-            #
-            progress.status("dd_inject %s" %(ifile) )
-            [status, rtn] = commands.getstatusoutput(os_cmd)
-            if status:
-                self.log.warning("dd_inject: unable to inject %s" %(ifile) )
-                print rtn
-                return
+                os_cmd = os_cmd + 'if=%s skip=%s of=%s seek=%s bs=%s count=%s' %(ifile, iseek, ofile, oseek, bs, count)
+                #
+                progress.status("dd_inject %s" %(ifile) )
+                [status, rtn] = commands.getstatusoutput(os_cmd)
+                if status:
+                    self.log.warning("dd_inject: unable to inject %s" %(ifile) )
+                    print rtn
                 
+    #---------------------------------------------------------------------------------
+    def dd_status(progress, ddcmd, size):
+        import re
+
+        # open pipe
+        (inf, errf) = os.popen4(ddcmd, 'r', 1)
+        # set our defaults
+        err = 1
+        message = ""
+        # our regex to match dd's output ( eg: "118113+0 records in" )
+        regex = re.compile("\s*(\d+)")
+        # reset progress
+        progress.update_progress(0)
+        progress.set_max_progress(size)
+
+        while err:
+            # read unbuffered character by character
+            err = errf.read(1)
+            if err:
+                # append to our message
+                message += err
+
+                # end of line, let's report it
+                if err == "\n":
+                    message = message.strip()
+                    try:
+                        written = regex.match(message).groups()[0]
+                        progress.update_progress(int(written))
+                    except:
+                        # ok, didn't match regex or progress raised an exception
+                        pass
+                    
     #---------------------------------------------------------------------------------
     def find_packager(self): 
         """ Detect packaging systems such as py2app and py2exe """ 
@@ -411,37 +458,30 @@ class LiveUSBCreator(object):
 
     #---------------------------------------------------------------------------------
     def detect_removable_drives(self):
-        """ This method should populate self.drives with removable devices """
         raise NotImplementedError
 
     #---------------------------------------------------------------------------------
     def extract_bootefi(self, progress):
-        """ Extract boot.efi from the AppleTV Update DMG """
         raise NotImplementedError
 
     #---------------------------------------------------------------------------------
     def partition_disk(self, progress):
-        """ Partition Disk """
         raise NotImplementedError
 
     #---------------------------------------------------------------------------------
     def install_recovery(self, progress):
-        """ Install Recovery Partition Contents """
         raise NotImplementedError
 
     #---------------------------------------------------------------------------------
     def install_patchstick(self, progress):
-        """ Install Patchstick Partition Contents """
         raise NotImplementedError
 
     #---------------------------------------------------------------------------------
     def get_proxies(self):
-        """ Return a dictionary of proxy settings """
         return None
 
     #---------------------------------------------------------------------------------
     def terminate(self):
-        """ Terminate any subprocesses that we have spawned """
         raise NotImplementedError
 
 #-------------------------------------------------------------------------------------
@@ -468,8 +508,6 @@ class LinuxLiveUSBCreator(LiveUSBCreator):
         mount = self.drives[self.drive]['mount']
         if os.path.exists(mount):
             self.popen('umount ' + mount)
-
-    #---------------------------------------------------------------------------------
 
     #---------------------------------------------------------------------------------
     def detect_removable_drives(self):
@@ -618,7 +656,7 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
             self.log.warning("Unable to mount device: %s" %(rtn) )
             return
         progress.update_progress(33)
-        # copy boot.efi to downloads
+        # copy boot.efi to staging
         bootefi_src = os.path.join(mount_point, 'OSBoot', 'usr', 'standalone', 'i386', 'boot.efi')
         shutil.copy(bootefi_src, self.bootefi)
         progress.update_progress(66)
@@ -657,7 +695,7 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
             return status
         
         # install patchstick onto target disk
-        progress.update_progress(74)
+        progress.update_progress(75)
         progress.status("  install patchstick onto target disk")
         status = self.install_patchstick(progress)
         if (status == False):
@@ -821,8 +859,6 @@ class WindowsLiveUSBCreator(LiveUSBCreator):
 
     def __init__(self, opts):
         super(WindowsLiveUSBCreator, self).__init__(opts)
-        # fixme
-        self.volume_path = '/Volumes/PATCHSTICK'
  
     #---------------------------------------------------------------------------------
     def popen(self, cmd, **kwargs):
@@ -854,7 +890,7 @@ class WindowsLiveUSBCreator(LiveUSBCreator):
     def detect_removable_drives(self):
         import win32file, win32api
         self.drives = {}
-        for drive in [l + ':' for l in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']:
+        for drive in [l + ':' for l in 'DEFGHIJKLMNOPQRSTUVWXYZ']:
             if win32file.GetDriveType(drive) == win32file.DRIVE_REMOVABLE or \
                drive == self.opts.force:
                 try:
@@ -862,6 +898,7 @@ class WindowsLiveUSBCreator(LiveUSBCreator):
                     label = vol[0]
                 except:
                     label = None
+                    
                 self.drives[drive] = {
                     'mount'   : drive,
                     'udi'     : None,
@@ -872,9 +909,103 @@ class WindowsLiveUSBCreator(LiveUSBCreator):
 
     #---------------------------------------------------------------------------------
     def extract_bootefi(self, progress):
-        """ Extract boot.efi from DMG with 7-zip directly to the USB key """
+        """ Extract boot.efi from DMG with 7-zip """
         progress.status("Extracting boot.efi ...")
-        self.popen('7z x "%s" -x![BOOT] -y -o%s' % (self.dmg, self.drive))
+        progress.update_progress(0)
+        progress.set_max_progress(100)
+        # convert the dmg disk image
+        hfs_image = os.path.join(self.staging, '2.hfs')
+        progress.update_progress(33)
+        if os.path.exists(self.dmg) and not os.path.exists(hfs_image):
+            self.popen('7z e "%s" 2.hfs -y -o"%s"' %(self.dmg, self.staging))
+
+        progress.update_progress(66)
+        if os.path.exists(hfs_image) and not os.path.exists(self.bootefi):
+            bootefi_src = os.path.join('OSBoot', 'usr', 'standalone', 'i386', 'boot.efi')
+            self.popen('7z e "%s" "%s" -y -o"%s"' %(hfs_image, bootefi_src, self.staging))
+            if os.path.exists(self.bootefi):
+                os.remove(hfs_image)
+
+        progress.update_progress(100)
+
+
+    #---------------------------------------------------------------------------------
+    def create_image(self, progress):
+        progress.status("Creating USB Flash Disk...")
+        progress.update_progress(0)
+        progress.set_max_progress(100)
+        
+        # partition the target disk
+        progress.update_progress(25)
+        progress.status("  extract target image")
+        # extract the base disk image
+        # created using "7za a -t7z atv_512MB.7z atv_512MB.img"
+        archive = os.path.join(self.payloads, usb_info[0]['file'])
+        usb_image = os.path.join(self.staging, usb_info[0]['name'])
+        self.extract_7z_image(progress, archive, usb_image, self.staging)
+
+        # install recovery onto target disk
+        progress.update_progress(50)
+        progress.status("  install recovery onto target image")
+        status = self.install_recovery(progress)
+        if (status == False):
+            progress.status("  install_recovery failed")
+            return status
+        
+        # install patchstick onto target disk
+        progress.update_progress(75)
+        progress.status("  install patchstick onto target image")
+        status = self.install_patchstick(progress)
+        if (status == False):
+            progress.status("  install_patchstick failed")
+            return status
+
+        # dd the usb image to the USB flash drive
+        progress.status("  copy target image to USB Flash" )
+        self.dd_disk_image(progress, usb_image)
+
+        progress.update_progress(100)
+        #self.umount_disk(progress)
+        
+        return True
+
+    #---------------------------------------------------------------------------------
+    def install_recovery(self, progress):
+        # extract the hfs recovery image
+        # created using "7za a -t7z atv_recv.7z atv_recv.img"
+        archive = os.path.join(self.payloads, hfs_info[0]['file'])
+        hfs_image = os.path.join(self.staging, hfs_info[0]['name'])
+        self.extract_7z_image(progress, archive, hfs_image, self.staging)
+        
+        # inject boot.efi (this will overwrite a dummy boot.efi)
+        self.inject(progress, self.bootefi, hfs_image, 0, hfs_info[0]['efibgn'], hfs_info[0]['eficnt'])
+        
+        # overlay the hfs partition image into usb disk image.
+        usb_image = os.path.join(self.staging, usb_info[0]['name'])
+        self.inject(progress, hfs_image, usb_image, 0, usb_info[0]['p1_bgn'], usb_info[0]['p1_cnt'])
+        #self.dd_inject(progress, hfs_image, 0, usb_image, usb_info[0]['p1_bgn']/512, 512, usb_info[0]['p1_cnt']/512)
+        
+        return True
+
+    #---------------------------------------------------------------------------------
+    def install_patchstick(self, progress):
+        # extract the fat32 patchstick image
+        # created using "7za a -t7z atv_recv.7z atv_fat32.img"
+        archive = os.path.join(self.payloads, fat_info[0]['file'])
+        fat_image = os.path.join(self.staging, fat_info[0]['name'])
+        self.extract_7z_image(progress, archive, fat_image, self.staging)
+        
+        # inject the packages into fat32 image
+        for installer in installers:
+            if installer['install']:
+                self.install_payload(installer, fat_image)
+                break
+
+        # overlay the fat32 partition image into usb disk image.
+        usb_image = os.path.join(self.staging, usb_info[0]['name'])
+        self.dd_inject(progress, fat_image, 0, usb_image, usb_info[0]['p2_bgn']/512, 512, usb_info[0]['p2_cnt']/512)
+
+        return True
 
     #---------------------------------------------------------------------------------
     def get_proxies(self):

@@ -24,12 +24,22 @@ usb_info = (
         'file'  : 'atv_512MB.7z',
         'sha1'  : '0000000000000000000000000000000000000000',
         'size'  : 1000000 * 512,
-        'p1_fs' : 'fat32',
+        'p1_fs' : 'hfsplus',
         'p1_bgn': 40 * 512,
+        'p1_cnt': 51000 * 512,
+        'p2_fs' : 'fat32',
+        'p2_bgn': 51040 * 512,
         'p2_cnt': 948800 * 512,
-        'p2_fs' : 'hfsplus',
-        'p2_bgn': 948840 * 512,
-        'p2_cnt': 51000 * 512,
+    },
+)
+
+fat_info = (
+    {
+        'name'  : 'atv_fat.img',
+        'file'  : 'atv_fat.7z',
+        'sha1'  : '0000000000000000000000000000000000000000',
+        'size'  : 948800 * 512,
+        'p1_fs' : 'fat32',
     },
 )
 
@@ -41,7 +51,7 @@ usb_info = (
 hfs_info = (
     {
         'name'  : 'atv_recv.img',
-        'file'  : 'atv_recv.img.zip',
+        'file'  : 'atv_recv.7z',
         'sha1'  : '0000000000000000000000000000000000000000',
         'size'  : 51000 * 512,
         'p1_fs' : 'hfsplus',
@@ -49,6 +59,8 @@ hfs_info = (
         'eficnt': 298800,
     },
 )
+
+
 
 installers = (
     {
