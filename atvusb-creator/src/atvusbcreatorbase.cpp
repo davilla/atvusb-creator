@@ -1,6 +1,6 @@
 #include "atvusbcreatorbase.h"
 //---------------------------------------------------------------------- 
-AtvUsbCreatorBase::AtvUsbCreatorBase() {
+AtvUsbCreatorBase::AtvUsbCreatorBase():m_download_folder("~/Desktop") {
   m_info_data.populateWithDefaults();
 }
 
@@ -45,6 +45,11 @@ const AtvUsbCreatorBase::tDeviceList& AtvUsbCreatorBase::getcrDevices(){
 }
 
 //---------------------------------------------------------------------- 
+const std::string& AtvUsbCreatorBase::getcrDownloadFolder(){
+  return m_download_folder;
+}
+
+//---------------------------------------------------------------------- 
 InfoData& AtvUsbCreatorBase::getrInfoData(){
   return m_info_data;
 }
@@ -53,3 +58,4 @@ InfoData& AtvUsbCreatorBase::getrInfoData(){
 Logger& AtvUsbCreatorBase::logger() {
   return m_logger;
 }
+

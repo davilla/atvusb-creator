@@ -96,7 +96,6 @@ void aucDialog::select_file(void) {
       //self.live.dmg = self._to_unicode(dmgfile)
       mp_creator->setDMGPath(dmgfile.toStdString());
     } catch (std::exception& e){ 
-      //TODO no loggin yet
       mp_creator->logger().error(e.what());
       status("Sorry, I'm having trouble encoding the filename "
             "of your livecd.  You may have better luck if "
@@ -325,10 +324,8 @@ void aucDialog::build_installer(void) {
       //If the user has selected an DMG, use it.
       m_thread.start();
     } else {
-      assert(0);
       //If no selected DMG, download one.
-      //TODO get destination folder from mp_creator
-      m_release_downloader.download("/Users/diederich/Desktop/", get_appletv_dmg_url());
+      m_release_downloader.download(QString::fromStdString(mp_creator->getcrDownloadFolder()), get_appletv_dmg_url());
     }
   }
 }
@@ -365,8 +362,5 @@ QString aucDialog::get_selected_drive(void) {
 
 //---------------------------------------------------------------------- 
 QString aucDialog::get_appletv_dmg_url(void) {
-  assert(0); //TODO
-  return QString();
-//  return QString("http://atv-xbmc-launcher.googlecode.com/files/XBMCLauncher-0.4-debug.run");
-   //return QString::fromStdString(atv_dmg_info.url);
+  return QString::fromStdString(mp_creator->getrInfoData().atv_dmg_info().url);
 }

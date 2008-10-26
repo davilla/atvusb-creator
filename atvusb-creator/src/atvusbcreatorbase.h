@@ -72,6 +72,8 @@ public:
   virtual void detect_removable_drives() = 0;
   const tDeviceList& getcrDevices();
   
+  const std::string& getcrDownloadFolder();
+  
   //get access to InfoData
   InfoData& getrInfoData();
   
@@ -87,6 +89,7 @@ private:
   std::string             m_drive;
   Logger                  m_logger;
   InfoData                m_info_data;
+  std::string             m_download_folder;
 };
 #endif //ATVUSBCREATORBASE_H
 
