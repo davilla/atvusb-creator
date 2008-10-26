@@ -10,6 +10,7 @@
 //local includes
 #include "aucDialog.h"
 #include "aucreleasedownloader.h"
+#include "lists.h"
 
 //probably move this include hassle into an atvusbcreatorfactory.h
 #ifdef WIN32
@@ -190,19 +191,18 @@ void aucDialog::update_options2(void) {
   if ( installer->option2.find("patchsticks") != std::string::npos ) {
     patchstick = &data.patchsticks()[mp_ui->installMenu_2->currentIndex()];
     if ( patchstick->depends.find("atv-") != std::string::npos ) {
-      //TODO: why are the loaded here?
-      //mp_creator->load_packages(*patchstick);
-      //
-      for( index = 0; index < (int)data.packages(*patchstick).size(); index++) {
-        if ( data.packages(*patchstick)[index].install) {
-          mp_ui->installMenu_3->addItem(QIcon(":/install.png"), data.packages(*patchstick)[index].name.c_str());
+      mp_creator->getrInfoData().load_packages(*patchstick);
+      std::vector<PACKAGE>& packages = mp_creator->getrInfoData().packages();
+      for( index = 0; index < (int)packages.size(); index++) {
+        if ( packages[index].install) {
+          mp_ui->installMenu_3->addItem(QIcon(":/install.png"), packages[index].name.c_str());
         } else {
-          mp_ui->installMenu_3->addItem(QIcon(":/uninstall.png"), data.packages(*patchstick)[index].name.c_str());
+          mp_ui->installMenu_3->addItem(QIcon(":/uninstall.png"), packages[index].name.c_str());
         }
       }
       mp_ui->installMenu_3->setCurrentIndex(0);
       //
-      if ( data.packages(*patchstick)[mp_ui->installMenu_3->currentIndex()].install ) {
+      if ( packages[mp_ui->installMenu_3->currentIndex()].install ) {
         mp_ui->installCheckbox->setCheckState(Qt::Checked);
       } else {
         mp_ui->installCheckbox->setCheckState(Qt::Unchecked);

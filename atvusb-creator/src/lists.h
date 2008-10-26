@@ -91,24 +91,25 @@ public:
   std::vector<BACKUP>& backups();
   std::vector<RESTORE>& restores();
   std::vector<PATCHSTICK>& patchsticks();
-  std::vector<PACKAGE>& packages(PATCHSTICK& fr_which_patchstick);
+  std::vector<PACKAGE>& packages();
   std::vector<LINUX_VIDEO>& linux_video();
   std::vector<LINUX_IR>& linux_ir();
-
+  
+  void load_packages(PATCHSTICK& fcr_which_patchstick);  
+  
 private:
   InfoData(){};
   void populateWithDefaults();
 private:
   void load_installers(void);
+  
   void load_patchsticks(void);
-  void load_packages(void);  
   
   std::vector<INSTALLER>  m_installers;
   std::vector<BACKUP>     m_backup;
   std::vector<RESTORE>    m_restore;
   std::vector<PATCHSTICK> m_patchsticks;
-  //map patchstick->name to packages
-  std::map< std::string, std::vector<PACKAGE> > m_packages;
+  std::vector<PACKAGE>    m_packages;
   std::vector<LINUX_VIDEO> m_linux_video;
   std::vector<LINUX_IR>   m_linux_ir;
   

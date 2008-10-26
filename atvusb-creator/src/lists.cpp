@@ -33,8 +33,8 @@ std::vector<PATCHSTICK>& InfoData::patchsticks(){
   return m_patchsticks;
 }
 
-std::vector<PACKAGE>& InfoData::packages(PATCHSTICK& fr_which_patchstick){
-  return m_packages[fr_which_patchstick.name];
+std::vector<PACKAGE>& InfoData::packages(){
+  return m_packages;
 }
 
 std::vector<LINUX_VIDEO>& InfoData::linux_video(){
@@ -49,7 +49,6 @@ std::vector<LINUX_IR>& InfoData::linux_ir(){
 void InfoData::populateWithDefaults(){
   load_installers();
   load_patchsticks();
-  load_packages();
 }
 
 //---------------------------------------------------------------------- 
@@ -93,19 +92,17 @@ void InfoData::load_patchsticks(void) {
 }
 
 //---------------------------------------------------------------------- 
-void InfoData::load_packages() {
+void InfoData::load_packages(PATCHSTICK& fcr_which_patchstick) {
   int       index;
   
   m_packages.clear();
-  for(unsigned int i = 0; i < m_patchsticks.size(); ++i){
-  PATCHSTICK &patchstick = m_patchsticks[i];
+  PATCHSTICK &patchstick = fcr_which_patchstick;
   for( index = 0; index < 21; index++) {
     if ( default_data::packages[index].enable ) {
       std::string::size_type loc = default_data::packages[index].depends.find(patchstick.depends, 0);
       if( loc != std::string::npos ) {
-        m_packages[patchstick.name].push_back(default_data::packages[index]);
+        m_packages.push_back(default_data::packages[index]);
       }
     }
-  }
   }
 }
