@@ -34,7 +34,7 @@ from datetime import datetime
 from PyQt4 import QtCore, QtGui
 
 from liveusb import LiveUSBCreator, LiveUSBError
-from liveusb.dialog import Ui_Dialog
+from liveusb.dialog import Ui_aucDialog
 from liveusb.lists import atv_dmg_info
 from liveusb.lists import backup, restore, linux_video, linux_ir
 from liveusb.urlgrabber.grabber import URLGrabber, URLGrabError
@@ -211,16 +211,17 @@ class LiveUSBThread(QtCore.QThread):
         self.wait()
 
 #-------------------------------------------------------------------------------------
-class LiveUSBDialog(QtGui.QDialog, Ui_Dialog):
+class LiveUSBDialog(QtGui.QDialog, Ui_aucDialog):
     """ Our main dialog class """
     def __init__(self, opts):
         QtGui.QDialog.__init__(self)
-        Ui_Dialog.__init__(self)
+        Ui_aucDialog.__init__(self)
         self.opts = opts
         self.setupUi(self)
         self.live = LiveUSBCreator(opts=opts)
         self.get_appletv_dmg_url()
         self.set_installers()
+        self.set_installer_pict()
         self.set_installer_options()
         self.populate_devices()
         self.downloader = None
