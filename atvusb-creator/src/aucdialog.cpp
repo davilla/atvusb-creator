@@ -111,6 +111,7 @@ void aucDialog::select_file(void) {
 void aucDialog::set_installer_pict(void) {
   const INSTALLER       *installer;
   InfoData& data = mp_creator->getrInfoData();
+  
   // change the header image to match installer
   installer = &data.installers()[mp_ui->installerMenu->currentIndex()];
   mp_ui->headerLabel->setPixmap(QPixmap( installer->pict.c_str() ));
@@ -121,6 +122,7 @@ void aucDialog::set_installer_options(void) {
   int             index;
   INSTALLER       *installer;
   InfoData& data = mp_creator->getrInfoData();
+  
   for( index = 0; index < (int)data.installers().size(); index++) {
     data.installers()[index].install = false;
   }
@@ -180,13 +182,14 @@ void aucDialog::update_options2(void) {
   INSTALLER       *installer;
   PATCHSTICK      *patchstick;
   InfoData& data = mp_creator->getrInfoData();
+  
   // second options menu changed, update third options menu
   installer = &data.installers()[mp_ui->installerMenu->currentIndex()];
   //
   mp_ui->installMenu_3->clear();
   // watch the enable state, we start disabled here and
   // only enable it there are items in the menu
-  mp_ui->installMenu_3->setEnabled(true);
+  mp_ui->installMenu_3->setEnabled(false);
   mp_ui->installCheckbox->setEnabled(false);
   if ( installer->option2.find("patchsticks") != std::string::npos ) {
     patchstick = &data.patchsticks()[mp_ui->installMenu_2->currentIndex()];
@@ -218,43 +221,48 @@ void aucDialog::update_options2(void) {
 
 //---------------------------------------------------------------------- 
 void aucDialog::update_options3(void) {
-/*
-  # third options menu changed, update checkbox state 
-  package = self.live.packages[self.installMenu_3.currentIndex()]
-  if package['install']:
-    self.installCheckbox.setCheckState(QtCore.Qt.Checked)
-  else:
-    self.installCheckbox.setCheckState(QtCore.Qt.Unchecked)
-*/
+  int menu_index;
+  std::vector<PACKAGE>& packages = mp_creator->getrInfoData().packages();
+  
+  menu_index = mp_ui->installMenu_3->currentIndex();
+  // third options menu changed, update checkbox state 
+  if (menu_index > -1) {
+    if (packages[menu_index].install ) {
+      mp_ui->installCheckbox->setCheckState(Qt::Checked);
+    } else {
+      mp_ui->installCheckbox->setCheckState(Qt::Unchecked);
+    }
+  }
 }
 
 //---------------------------------------------------------------------- 
 void aucDialog::update_options3_fromcheckbox(void) {
-/*
-  # checkbox state changed, update third options menu icon 
-  package = self.live.packages[self.installMenu_3.currentIndex()]
-  # special check for only one composite video selection enabled.
-  # this touches package so remember to reload it at end
-  if 'Composite' in package['name']:
-    # if the selection is a composite video entry, turn off
-    # previous composite video entry
-    index = 0
-    for package in self.live.packages:
-      if 'Composite' in package['name']:
-        package['install'] = False
-        icon = QtGui.QIcon(":/uninstall.png")
-        self.installMenu_3.setItemIcon(index, icon);
-      index = index + 1
-    package = self.live.packages[self.installMenu_3.currentIndex()]
-  # now we can do the install toggle
-  if self.installCheckbox.checkState() == QtCore.Qt.Checked:
-    package['install'] = True
-    icon = QtGui.QIcon(":/install.png")
-  else:
-    package['install'] = False
-    icon = QtGui.QIcon(":/uninstall.png")
-  self.installMenu_3.setItemIcon(self.installMenu_3.currentIndex(), icon);
-*/
+  int index, menu_index;
+  std::vector<PACKAGE>& packages = mp_creator->getrInfoData().packages();
+
+  menu_index = mp_ui->installMenu_3->currentIndex();
+  if (menu_index > -1) {
+    // checkbox state changed, update third options menu icon 
+    // special check for only one composite video selection enabled.
+    if (packages[menu_index].name.find("Composite") != std::string::npos ) {
+      // if the selection is a composite video entry, turn off
+      // previous composite video entry
+      for( index = 0; index < (int)packages.size(); index++) {
+        if (packages[index].name.find("Composite") != std::string::npos ) {
+          packages[index].install = false;
+          mp_ui->installMenu_3->setItemIcon(index, QIcon(":/uninstall.png") );
+        }
+      }
+    }
+    // now we can do the install toggle
+    if (mp_ui->installCheckbox->checkState() == Qt::Checked) {
+      packages[menu_index].install = true;
+      mp_ui->installMenu_3->setItemIcon(menu_index, QIcon(":/install.png") );
+    } else {
+      packages[menu_index].install = false;
+      mp_ui->installMenu_3->setItemIcon(menu_index, QIcon(":/uninstall.png") );
+    }
+  }
 }
 
 //---------------------------------------------------------------------- 
@@ -306,6 +314,7 @@ void aucDialog::enable_widgets(bool f_enable) {
   mp_ui->deviceRefreshButton->setEnabled(f_enable);
 }
 
+//---------------------------------------------------------------------- 
 void aucDialog::enable_widgets(){
   enable_widgets(true);
 }
