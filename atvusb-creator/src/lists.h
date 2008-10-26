@@ -81,6 +81,7 @@ typedef struct _LINUX_IR {
 
 
 class InfoData{
+  friend class AtvUsbCreatorBase;
 public:
   DMG_INFO& atv_dmg_info();
   DMG_INFO& osx_dmg_info();
@@ -93,7 +94,9 @@ public:
   std::vector<PACKAGE>& packages(PATCHSTICK& fr_which_patchstick);
   std::vector<LINUX_VIDEO>& linux_video();
   std::vector<LINUX_IR>& linux_ir();
-  
+
+private:
+  InfoData(){};
   void populateWithDefaults();
 private:
   void load_installers(void);
