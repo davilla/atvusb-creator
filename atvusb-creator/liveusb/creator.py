@@ -91,7 +91,7 @@ class LiveUSBCreator(object):
         
         self.staging = os.path.join(abspath, 'staging')
         self.downloads = os.path.join(abspath, 'downloads')
-        self.flashmount = tempfile.mkdtemp()
+        self.tmp_folder = tempfile.mkdtemp()
 
         if not os.path.exists(self.staging):
             os.mkdir(self.staging)
@@ -739,7 +739,7 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
     #---------------------------------------------------------------------------------
     def install_recovery(self, progress):
         # mount recovery partition at our specific mount point so we can find it
-        os_cmd = 'mount_hfs "%s" "%s"' %(self.drive_recovery , self.flashmount)
+        os_cmd = 'mount_hfs "%s" "%s"' %(self.drive_recovery , self.tmp_folder)
         [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
             progress.status("Unable to mount recovery: %s" %(rtn) )
@@ -751,7 +751,7 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
         os_cmd = 'hdiutil attach "%s" -mountroot "%s"' %(hfs_image, mount_point)
         [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
-            os_cmd = 'umount -f "%s"' %(self.flashmount)
+            os_cmd = 'umount -f "%s"' %(self.tmp_folder)
             commands.getstatusoutput(os_cmd)
             progress.status("Unable to mount image: %s" %(rtn) )
             return False
@@ -759,11 +759,11 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
         progress.status("  copy files to target disk")
         # copy contents of recovery seed to recovery on flash
         mount_point = mount_point + '/Recovery'
-        shutil.copy(mount_point + '/mach_kernel', self.flashmount)
-        shutil.copy(mount_point + '/BootLogo.png', self.flashmount)
-        shutil.copy(mount_point + '/com.apple.Boot.plist', self.flashmount)
-        shutil.copytree(mount_point + '/System', self.flashmount + '/System')
-        shutil.copy(self.bootefi, self.flashmount)
+        shutil.copy(mount_point + '/mach_kernel', self.tmp_folder)
+        shutil.copy(mount_point + '/BootLogo.png', self.tmp_folder)
+        shutil.copy(mount_point + '/com.apple.Boot.plist', self.tmp_folder)
+        shutil.copytree(mount_point + '/System', self.tmp_folder + '/System')
+        shutil.copy(self.bootefi, self.tmp_folder)
         # always sync to force to physical disk
         commands.getstatusoutput('sync')
         
@@ -775,7 +775,7 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
             return False
         #
         # unmount recovery
-        os_cmd = 'umount -f "%s"' %(self.flashmount)
+        os_cmd = 'umount -f "%s"' %(self.tmp_folder)
         [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
             progress.status("Unable to unmount recovery: %s" %(rtn) )
@@ -818,8 +818,8 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
 
     #---------------------------------------------------------------------------------
     def install_patchstick(self, progress):
-        os_cmd = 'mount_msdos "%s" "%s"' %(self.drive_patchstick , self.flashmount)
-        #os_cmd = 'mount_hfs "%s" "%s"' %(self.drive_patchstick , self.flashmount)
+        os_cmd = 'mount_msdos "%s" "%s"' %(self.drive_patchstick , self.tmp_folder)
+        #os_cmd = 'mount_hfs "%s" "%s"' %(self.drive_patchstick , self.tmp_folder)
         [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
             progress.status("Unable to mount PATCHSTICK: %s" %(rtn) )
@@ -829,12 +829,12 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
         # now install the payloads onto the "PATCHSTICK" volume        
         for installer in installers:
             if installer['install']:
-                self.install_payload(installer, self.flashmount)
+                self.install_payload(installer, self.tmp_folder)
                 break
         # always sync to force to physical disk
         commands.getstatusoutput('sync')
                 
-        os_cmd = 'umount -f "%s"' %(self.flashmount)
+        os_cmd = 'umount -f "%s"' %(self.tmp_folder)
         [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
             progress.status("Unable to unmount PATCHSTICK: %s" %(rtn) )
