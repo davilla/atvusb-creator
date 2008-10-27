@@ -1,6 +1,8 @@
 #include "atvusbcreatorlinux.h"
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusReply>
+#include <QtCore/QStringList>
 
 AtvUsbCreatorLinux::AtvUsbCreatorLinux()
                 : AtvUsbCreatorBase()
@@ -12,59 +14,70 @@ AtvUsbCreatorLinux::~AtvUsbCreatorLinux()
 {
 }
 
-//         def _get_device(device):
-//       dev_obj = self.bus.get_object("org.freedesktop.Hal", device)
-//       return dbus.Interface(dev_obj, "org.freedesktop.Hal.Device")
 
-//         def _add_device(dev):
+namespace {
+
+  template <QVariant::Type T_Type>
+      QVariant callAndReturnResponse(QDBusInterface& fr_dbus_interface, const QString& fr_method, const QString& fr_arg, QString f_arg_optional = QString()){
+    QDBusMessage reply;
+    if(f_arg_optional.isEmpty())
+      reply = fr_dbus_interface.call( fr_method, fr_arg );
+    else
+      reply = fr_dbus_interface.call( fr_method, fr_arg, f_arg_optional);
+    if(reply.type() != QDBusMessage::ReplyMessage){
+      if(reply.type() == QDBusMessage::ErrorMessage)
+        throw AtvUsbCreatorException("DBus error: " + reply.errorMessage().toStdString());
+      throw AtvUsbCreatorException("Unknown DBus error");
+    }
+    if(!reply.arguments().size() || reply.arguments()[0].type() != T_Type)
+      throw AtvUsbCreatorException("DBus error: Unknown DBUS response");
+    return reply.arguments()[0];
+  }
+
+}
+void AtvUsbCreatorLinux::detect_removable_drives()
+{
+  m_devices.clear();
+  QDBusInterface computer("org.freedesktop.Hal", "/org/freedesktop/Hal/Manager", "org.freedesktop.Hal.Manager", QDBusConnection::systemBus());
+
+  //TODO how to get force flag here?
+//         if self.opts.force:
+//           devices = self.hal.FindDeviceStringMatch('block.device',
+//               self.opts.force)
+//         else:
+//           devices = self.hal.FindDeviceByCapability("storage")
+  //get storage devices
+  QStringList devices = callAndReturnResponse<QVariant::StringList>(computer, "FindDeviceByCapability", "storage" ).toStringList();
+  for(unsigned int i = 0; i< devices.size(); ++i){
+    QString current_device_string = devices[i];
+    //get few infos about this device
+    QDBusInterface device("org.freedesktop.Hal", current_device_string, "org.freedesktop.Hal.Device" , QDBusConnection::systemBus());
+    QString bus = callAndReturnResponse<QVariant::String>(device, "GetPropertyString", "storage.bus" ).toString();
+    bool removable = callAndReturnResponse<QVariant::Bool>(device, "GetPropertyBoolean", "storage.removable" ).toBool();
+    if(bus == "usb" && removable){
+      if(callAndReturnResponse<QVariant::Bool>(device, "GetPropertyBoolean", "block.is_volume" ).toBool()){
+        m_devices.push_back(callAndReturnResponse<QVariant::String>(device, "GetPropertyString", "block.device").toString().toStdString());
+      } else {
+        QStringList children = callAndReturnResponse<QVariant::StringList>(computer, "FindDeviceStringMatch", "info.parent", current_device_string).toStringList();
+        for(unsigned int k = 0; k<children.size(); ++k){
+          QString child_device_string = children[k];
+          QDBusInterface child_device("org.freedesktop.Hal", child_device_string, "org.freedesktop.Hal.Device" , QDBusConnection::systemBus());
+          if(callAndReturnResponse<QVariant::Bool>(child_device, "GetPropertyBoolean", "block.is_volume" ).toBool()){
+            m_devices.push_back(callAndReturnResponse<QVariant::String>(device, "GetPropertyString", "block.device").toString().toStdString());
+          }
+      }
+    }
+     //TODO
 //       mount = str(dev.GetProperty('volume.mount_point'))
 //       self.drives[str(dev.GetProperty('block.device'))] = {
 //     'mount'   : mount,
 //     'udi'     : dev,
 //     'mounted' : False,
 //       }
-
-void AtvUsbCreatorLinux::detect_removable_drives()
-{
-  QDBusInterface computer("org.freedesktop.Hal", "/org/freedesktop/Hal/Manager", "org.freedesktop.Hal.Manager");
-
-//     computer.Reboot()
-
-//   
-//       import dbus
-//
-//
-//       self.drives = {}
-//       self.bus = dbus.SystemBus()
-//           hal_obj = self.bus.get_object("org.freedesktop.Hal",
-//                                         "/org/freedesktop/Hal/Manager")
-//           self.hal = dbus.Interface(hal_obj, "org.freedesktop.Hal.Manager")
-// 
-//           devices = []
-//         if self.opts.force:
-//           devices = self.hal.FindDeviceStringMatch('block.device',
-//               self.opts.force)
-//         else:
-//           devices = self.hal.FindDeviceByCapability("storage")
-// 
-//         for device in devices:
-//           dev = _get_device(device)
-//           if self.opts.force or dev.GetProperty("storage.bus") == "usb" and \
-//                dev.GetProperty("storage.removable"):
-//                 if dev.GetProperty("block.is_volume"):
-//           _add_device(dev)
-//           continue
-//           else: # iterate over children looking for a volume
-//           children = self.hal.FindDeviceStringMatch("info.parent",
-//                   device)
-//                     for child in children:
-//           child = _get_device(child)
-//                         if child.GetProperty("block.is_volume"):
-//           _add_device(child)
-// 
-//         if not len(self.drives):
-//           raise LiveUSBError("Unable to find any USB drives")
-
+    }
+  }
+  if (m_devices.empty())
+    throw AtvUsbCreatorException("Unable to find any USB drives");
 }
 
 
