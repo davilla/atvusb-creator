@@ -14,7 +14,8 @@
 //
 //   Exceptions:        
 //
-//   Description:       Implementation file for main ui dialog. uses platform specific AtvUsbCreatorBase implementation
+//   Description:       Implementation file for main ui dialog. uses platform specific
+//                      AtvUsbCreatorBase implementation
 //
 //   Copyright (C) 2008  TeamXBMC
 //   This program is free software; you can redistribute it and/or

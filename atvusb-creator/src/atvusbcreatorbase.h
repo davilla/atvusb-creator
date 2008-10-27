@@ -40,6 +40,8 @@
 #include <vector>
 #include <stdexcept>
 
+#include <QtCore/QString>
+
 #include "lists.h"
 
 struct AtvUsbCreatorException : public std::runtime_error{
@@ -60,19 +62,18 @@ public:
           AtvUsbCreatorBase();
   virtual ~AtvUsbCreatorBase();
 
-  void setDMGPath(const std::string &fcr_path);
-  const std::string& getcrDMGPath() const;
+  void setDMGPath(const QString &fcr_path);
+  const QString& getcrDMGPath() const;
   
-  void setBootEFIPath(const std::string &fcr_path);
-  const std::string& getcrBootEFIPath() const;
+  const QString& getcrBootEFIPath() const;
   
-  void setDrive(const std::string &fcr_path);
+  void setDrive(const QString &fcr_path);
     
   typedef std::vector<std::string> tDeviceList;
   virtual void detect_removable_drives() = 0;
   const tDeviceList& getcrDevices();
   
-  const std::string& getcrDownloadFolder();
+  const QString& getcrDownloadFolder();
   
   //get access to InfoData
   InfoData& getrInfoData();
@@ -84,12 +85,16 @@ protected:
   tDeviceList             m_devices; //gets populated in platform specific implementation
   
 private:
-  std::string             m_dmg_path;
-  std::string             m_bootefi_path;
-  std::string             m_drive;
   Logger                  m_logger;
   InfoData                m_info_data;
-  std::string             m_download_folder;
+  // absolute paths to various items/folders
+  QString                 m_drive;
+  QString                 m_dmg_path;
+  QString                 m_bootefi_path;
+  QString                 m_tmp_folder;
+  QString                 m_payload_folder;
+  QString                 m_staging_folder;
+  QString                 m_download_folder;
 };
 #endif //ATVUSBCREATORBASE_H
 

@@ -13,18 +13,15 @@
 #include "lists.h"
 
 //probably move this include hassle into an atvusbcreatorfactory.h
-#ifdef WIN32
+#if defined(WIN32)
   #error "nothing here yet..implement me!"
   #include "win32/atvusbcreatorwin32.h"
-#else
-#ifdef __APPLE__
+#elif defined(__APPLE__)
   #include "osx/atvusbcreatorosx.h"
 #else
- //linux
  #error "nothing here yet..implement me!"
- #include "osx/atvusbcreatorlinux.h"
-#endif
-#endif
+ #include "linux/atvusbcreatorlinux.h"
+#endif  
 
 //---------------------------------------------------------------------- 
 //---------------------------------------------------------------------- 
@@ -95,7 +92,7 @@ void aucDialog::select_file(void) {
     try {
       //TODO what's the _to_unicode_thing? how can it go wrong?
       //self.live.dmg = self._to_unicode(dmgfile)
-      mp_creator->setDMGPath(dmgfile.toStdString());
+      mp_creator->setDMGPath(dmgfile);
     } catch (std::exception& e){ 
       mp_creator->logger().error(e.what());
       status("Sorry, I'm having trouble encoding the filename "
@@ -286,14 +283,14 @@ void aucDialog::populate_devices(void) {
 
 //---------------------------------------------------------------------- 
 AtvUsbCreatorBase* aucDialog::createPlatformSpecificCreator(void) {
-//probably move this include hassle into an atvusbcreatorfactory.h
-#if defined(WIN32)
-  return new AtvUsbCreatorWin32;
-#elif defined(__APPLE__)
-  return new AtvUsbCreatorOSX;
-#else
-  return new AtvUsbCreatorLinux;
-#endif  
+  //probably move this include hassle into an atvusbcreatorfactory.h
+  #if defined(WIN32)
+    return new AtvUsbCreatorWin32;
+  #elif defined(__APPLE__)
+    return new AtvUsbCreatorOSX;
+  #else
+    return new AtvUsbCreatorLinux;
+  #endif  
 }
 
 //---------------------------------------------------------------------- 
@@ -323,18 +320,18 @@ void aucDialog::enable_widgets(){
 void aucDialog::build_installer(void) {
   enable_widgets(false);
   //
-  mp_creator->setDrive(get_selected_drive().toStdString());
+  mp_creator->setDrive( get_selected_drive() );
   //
-  if (QFile::exists(QString::fromStdString(mp_creator->getcrBootEFIPath()))){
+  if (QFile::exists( mp_creator->getcrBootEFIPath() )) {
     //if boot.efi exits just use it
     m_thread.start();
   } else {
-    if (! mp_creator->getcrDMGPath().empty()){
+    if (! mp_creator->getcrDMGPath().isEmpty()){
       //If the user has selected an DMG, use it.
       m_thread.start();
     } else {
       //If no selected DMG, download one.
-      m_release_downloader.download(QString::fromStdString(mp_creator->getcrDownloadFolder()), get_appletv_dmg_url());
+      m_release_downloader.download(mp_creator->getcrDownloadFolder(), get_appletv_dmg_url());
     }
   }
 }
@@ -343,7 +340,7 @@ void aucDialog::build_installer(void) {
 void aucDialog::download_complete(QString f_path) {
   if (QFile::exists(f_path)){
     status("Download complete!");
-    mp_creator->setDMGPath(f_path.toStdString());
+    mp_creator->setDMGPath(f_path);
     m_thread.start();
   } else {
     status("Download failed: " + f_path);
