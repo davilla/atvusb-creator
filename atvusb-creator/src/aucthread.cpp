@@ -1,4 +1,7 @@
 #include "aucthread.h"
+
+#include <cassert>
+
 #include "aucprogressthread.h"
 #include "atvusbcreatorbase.h"
 

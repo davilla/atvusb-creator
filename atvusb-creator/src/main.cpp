@@ -1,7 +1,7 @@
 #include <iostream>
 #include <QtGui/QApplication>
 
-#include "aucDialog.h"
+#include "aucdialog.h"
 int main(int argc, char** argv){
 	QApplication application( argc, argv );       
 

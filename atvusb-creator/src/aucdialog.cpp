@@ -1,3 +1,4 @@
+#include "aucdialog.h"
 
 #include <stdexcept>
 #include <vector>
@@ -8,9 +9,7 @@
 #include "ui_atvusb.h"
 
 //local includes
-#include "aucDialog.h"
 #include "aucreleasedownloader.h"
-#include "lists.h"
 
 //probably move this include hassle into an atvusbcreatorfactory.h
 #if defined(WIN32)
@@ -19,7 +18,6 @@
 #elif defined(__APPLE__)
   #include "osx/atvusbcreatorosx.h"
 #else
- #error "nothing here yet..implement me!"
  #include "linux/atvusbcreatorlinux.h"
 #endif  
 

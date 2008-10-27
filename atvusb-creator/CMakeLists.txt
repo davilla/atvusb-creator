@@ -23,6 +23,12 @@ ENDIF (WIN32)
 #setup qt4
 find_package(Qt4 REQUIRED)
 SET(QT_USE_QTNETWORK 1)
+
+IF(NOT WIN32 AND NOT APPLE)
+#we're using QDbus on linux
+SET(QT_USE_QTDBUS 1)
+ENDIF(NOT WIN32 AND NOT APPLE)
+
 include(${QT_USE_FILE})
 
 #--------------------------------------------------------------------------------
@@ -59,7 +65,8 @@ ELSE(WIN32)
 	IF(APPLE)
 		SET(atvusb-creator_SRCS ${atvusb-creator_SRCS} src/osx/atvusbcreatorosx.h src/osx/atvusbcreatorosx.cpp)
 	ELSE(APPLE)
-		#linux
+    #linux
+    SET(atvusb-creator_SRCS ${atvusb-creator_SRCS} src/linux/atvusbcreatorlinux.h src/linux/atvusbcreatorlinux.cpp)
 	ENDIF(APPLE) 
 ENDIF(WIN32)
 
