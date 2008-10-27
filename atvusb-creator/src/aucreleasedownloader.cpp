@@ -1,9 +1,10 @@
 #include "aucreleasedownloader.h"
 
 #include <iostream>
+#include <QtCore/QDir>
+#include <QtCore/QUrl>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtCore/QUrl>
 #include <QtNetwork/QHttp>
 
 AucReleaseDownloader::AucReleaseDownloader(){
@@ -26,7 +27,7 @@ void AucReleaseDownloader::download(QString f_destination_folder, QString f_url)
     return;
   }
   //assemble and clean destination path
-  QString dst_path = f_destination_folder + '/' + QFileInfo(f_url).fileName();
+  QString dst_path = f_destination_folder + QDir::separator() + QFileInfo(f_url).fileName();
   if ( QFile::exists(dst_path) ){
     QFile::remove(dst_path);
   }  
