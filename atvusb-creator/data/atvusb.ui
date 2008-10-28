@@ -8,8 +8,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>594</width>
-    <height>745</height>
+    <width>473</width>
+    <height>530</height>
    </rect>
   </property>
   <property name="sizePolicy" >
@@ -30,15 +30,15 @@
   <property name="modal" >
    <bool>false</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_6" >
+  <layout class="QVBoxLayout" >
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5" >
+    <layout class="QHBoxLayout" >
      <item>
-      <spacer name="horizontalSpacer" >
+      <spacer>
        <property name="orientation" >
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" >
         <size>
          <width>40</width>
          <height>20</height>
@@ -49,11 +49,7 @@
      <item>
       <widget class="QLabel" name="headerLabel" >
        <property name="text" >
-        <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Tahoma'; font-size:8pt; font-weight:400; font-style:normal;">
-&lt;p align="center" style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;/p>&lt;/body>&lt;/html></string>
+        <string/>
        </property>
        <property name="pixmap" >
         <pixmap resource="resources.qrc" >:/atv-bootloader.png</pixmap>
@@ -61,11 +57,11 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_2" >
+      <spacer>
        <property name="orientation" >
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" >
         <size>
          <width>40</width>
          <height>20</height>
@@ -76,9 +72,9 @@ p, li { white-space: pre-wrap; }
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4" >
+    <layout class="QHBoxLayout" >
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4" >
+      <layout class="QVBoxLayout" >
        <item>
         <widget class="QGroupBox" name="installerGroup" >
          <property name="font" >
@@ -92,7 +88,7 @@ p, li { white-space: pre-wrap; }
          <property name="title" >
           <string>Choose an Installation</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3" >
+         <layout class="QVBoxLayout" >
           <item>
            <widget class="QComboBox" name="installerMenu" >
             <property name="editable" >
@@ -128,7 +124,7 @@ p, li { white-space: pre-wrap; }
          <property name="title" >
           <string>Download AppleTV Update DMG or</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2" >
+         <layout class="QVBoxLayout" >
           <item>
            <widget class="QPushButton" name="browseButton" >
             <property name="text" >
@@ -163,7 +159,7 @@ p, li { white-space: pre-wrap; }
        <property name="title" >
         <string>Installation Options</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout" >
+       <layout class="QVBoxLayout" >
         <item>
          <widget class="QComboBox" name="installMenu_1" >
           <property name="accessibleName" >
@@ -197,7 +193,7 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout" >
+         <layout class="QHBoxLayout" >
           <item>
            <widget class="QCheckBox" name="installCheckbox" >
             <property name="text" >
@@ -254,7 +250,7 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3" >
+    <layout class="QHBoxLayout" >
      <item>
       <widget class="QPushButton" name="startButton" >
        <property name="enabled" >
@@ -281,17 +277,16 @@ p, li { white-space: pre-wrap; }
        <property name="title" >
         <string>USB Target Device</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_5" >
+       <layout class="QVBoxLayout" >
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2" >
+         <layout class="QHBoxLayout" >
           <item>
            <widget class="QPushButton" name="deviceRefreshButton" >
             <property name="text" >
              <string/>
             </property>
             <property name="icon" >
-             <iconset resource="resources.qrc" >
-              <normaloff>:/refresh.png</normaloff>:/refresh.png</iconset>
+             <iconset resource="resources.qrc" >:/refresh.png</iconset>
             </property>
             <property name="flat" >
              <bool>true</bool>
