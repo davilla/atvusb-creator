@@ -1,5 +1,6 @@
 
 #include <QtCore/QDir>
+#include <QtCore/QProcess>
 #include <QtCore/QFileInfo>
 
 #include "atvusbcreatorbase.h"
@@ -53,23 +54,18 @@ const QString& AtvUsbCreatorBase::getcrBootEFIPath() const {
 }
 
 //---------------------------------------------------------------------- 
+const QString& AtvUsbCreatorBase::getcrDownloadFolder(){
+  return m_download_folder;
+}
+
+//---------------------------------------------------------------------- 
 void AtvUsbCreatorBase::setDrive(const QString &fcr_path) {
   m_drive = fcr_path;
 }
 
-//----------------------------------------------------------------------   
-void AtvUsbCreatorBase::detect_removable_drives(){
-  assert(0 && "implement me!");
-}
-
 //---------------------------------------------------------------------- 
-const AtvUsbCreatorBase::tDeviceList& AtvUsbCreatorBase::getcrDevices(){
+const QStringList& AtvUsbCreatorBase::getcrDevices(){
   return m_devices;
-}
-
-//---------------------------------------------------------------------- 
-const QString& AtvUsbCreatorBase::getcrDownloadFolder(){
-  return m_download_folder;
 }
 
 //---------------------------------------------------------------------- 
@@ -80,5 +76,64 @@ InfoData& AtvUsbCreatorBase::getrInfoData(){
 //---------------------------------------------------------------------- 
 Logger& AtvUsbCreatorBase::logger() {
   return m_logger;
+}
+
+//---------------------------------------------------------------------- 
+QString AtvUsbCreatorBase::do_process(const QString &program, const QStringList &arguments) {
+  QString         result;
+  QProcess        process;
+
+  process.start(program, arguments);
+  if (!process.waitForStarted())
+    throw AtvUsbCreatorException((program + " could not be started").toStdString());
+  if (!process.waitForFinished())
+    throw AtvUsbCreatorException((program + " exited with failure %1").arg(process.exitCode()).toStdString());
+
+  result = QString::fromLatin1(process.readAllStandardOutput());
+  
+  return(result);
+}
+
+//----------------------------------------------------------------------   
+void AtvUsbCreatorBase::mount_disk() {
+  assert(0 && "implement me!");
+}
+
+//----------------------------------------------------------------------   
+void AtvUsbCreatorBase::umount_disk() {
+  assert(0 && "implement me!");
+}
+//----------------------------------------------------------------------   
+void AtvUsbCreatorBase::detect_removable_drives(){
+  assert(0 && "implement me!");
+}
+
+//----------------------------------------------------------------------   
+void AtvUsbCreatorBase::extract_bootefi(){
+  assert(0 && "implement me!");
+}
+
+//----------------------------------------------------------------------   
+bool AtvUsbCreatorBase::create_image(){
+  assert(0 && "implement me!");
+  return false;
+}
+
+//----------------------------------------------------------------------   
+bool AtvUsbCreatorBase::partition_disk(){
+  assert(0 && "implement me!");
+  return false;
+}
+
+//----------------------------------------------------------------------   
+bool AtvUsbCreatorBase::install_recovery(){
+  assert(0 && "implement me!");
+  return false;
+}
+
+//----------------------------------------------------------------------   
+bool AtvUsbCreatorBase::install_patchstick(){
+  assert(0 && "implement me!");
+  return false;
 }
 

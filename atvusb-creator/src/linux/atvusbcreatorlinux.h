@@ -41,8 +41,15 @@ class AtvUsbCreatorLinux : public AtvUsbCreatorBase
 
     ~AtvUsbCreatorLinux();
     
-    ///Detects all removable USB storage devices using HAL via D-Bus
+    virtual void mount_disk();
+    virtual void umount_disk();
+    //Detects all removable USB storage devices using HAL via D-Bus
     virtual void detect_removable_drives();
+    virtual void extract_bootefi();
+    virtual bool create_image();
+    virtual bool partition_disk();
+    virtual bool install_recovery();
+    virtual bool install_patchstick();
 private:
 
 

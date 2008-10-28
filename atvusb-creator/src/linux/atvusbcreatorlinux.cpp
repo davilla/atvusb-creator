@@ -4,17 +4,17 @@
 #include <QtDBus/QDBusReply>
 #include <QtCore/QStringList>
 
-AtvUsbCreatorLinux::AtvUsbCreatorLinux()
-                : AtvUsbCreatorBase()
-{
+//----------------------------------------------------------------------   
+AtvUsbCreatorLinux::AtvUsbCreatorLinux() : AtvUsbCreatorBase() {
 }
 
 
-AtvUsbCreatorLinux::~AtvUsbCreatorLinux()
-{
+//----------------------------------------------------------------------   
+AtvUsbCreatorLinux::~AtvUsbCreatorLinux() {
 }
 
 
+//----------------------------------------------------------------------   
 namespace {
 
   template <QVariant::Type T_Type>
@@ -35,6 +35,18 @@ namespace {
   }
 
 }
+
+//----------------------------------------------------------------------   
+void AtvUsbCreatorLinux::mount_disk() {
+  assert(0 && "implement me!");
+}
+
+//----------------------------------------------------------------------   
+void AtvUsbCreatorLinux::umount_disk() {
+  assert(0 && "implement me!");
+}
+
+//----------------------------------------------------------------------   
 void AtvUsbCreatorLinux::detect_removable_drives()
 {
   m_devices.clear();
@@ -78,6 +90,35 @@ void AtvUsbCreatorLinux::detect_removable_drives()
   }
   if (m_devices.empty())
     throw AtvUsbCreatorException("Unable to find any USB drives");
+}
+
+//----------------------------------------------------------------------   
+void AtvUsbCreatorLinux::extract_bootefi(){
+  assert(0 && "implement me!");
+}
+
+//----------------------------------------------------------------------   
+bool AtvUsbCreatorLinux::create_image(){
+  assert(0 && "implement me!");
+  return false;
+}
+
+//----------------------------------------------------------------------   
+bool AtvUsbCreatorLinux::partition_disk(){
+  assert(0 && "implement me!");
+  return false;
+}
+
+//----------------------------------------------------------------------   
+bool AtvUsbCreatorLinux::install_recovery(){
+  assert(0 && "implement me!");
+  return false;
+}
+
+//----------------------------------------------------------------------   
+bool AtvUsbCreatorLinux::install_patchstick(){
+  assert(0 && "implement me!");
+  return false;
 }
 
 

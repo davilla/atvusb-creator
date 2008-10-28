@@ -41,6 +41,24 @@
 #include <stdexcept>
 
 #include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <qthread.h>
+
+// google say do this for sleeping :)
+class qthread : public QThread
+{
+public:
+	static void sleep(unsigned long secs) {
+		QThread::sleep(secs);
+	}
+	static void msleep(unsigned long msecs) {
+		QThread::msleep(msecs);
+	}
+	static void usleep(unsigned long usecs) {
+		QThread::usleep(usecs);
+	}
+};
+
 
 #include "lists.h"
 
@@ -62,17 +80,12 @@ public:
           AtvUsbCreatorBase();
   virtual ~AtvUsbCreatorBase();
 
-  void setDMGPath(const QString &fcr_path);
-  const QString& getcrDMGPath() const;
-  
-  const QString& getcrBootEFIPath() const;
-  
   void setDrive(const QString &fcr_path);
-    
-  typedef std::vector<std::string> tDeviceList;
-  virtual void detect_removable_drives() = 0;
-  const tDeviceList& getcrDevices();
+  const QStringList& getcrDevices();
+  void setDMGPath(const QString &fcr_path);
   
+  const QString& getcrDMGPath() const;
+  const QString& getcrBootEFIPath() const;
   const QString& getcrDownloadFolder();
   
   //get access to InfoData
@@ -80,17 +93,30 @@ public:
   
   //get access to logger functionality
   Logger& logger();
+
+  QString do_process(const QString &program, const QStringList &arguments);
+  
+  virtual void mount_disk();
+  virtual void umount_disk();
+  virtual void detect_removable_drives() = 0;
+  virtual void extract_bootefi();
+  virtual bool create_image();
+  virtual bool partition_disk();
+  virtual bool install_recovery();
+  virtual bool install_patchstick();
+  
   
 protected:
-  tDeviceList             m_devices; //gets populated in platform specific implementation
+  //gets populated in platform specific implementation
+  QStringList             m_devices;
+  QString                 m_drive;
+  QString                 m_dmg_path;
+  QString                 m_bootefi_path;
   
 private:
   Logger                  m_logger;
   InfoData                m_info_data;
   // absolute paths to various items/folders
-  QString                 m_drive;
-  QString                 m_dmg_path;
-  QString                 m_bootefi_path;
   QString                 m_tmp_folder;
   QString                 m_payload_folder;
   QString                 m_staging_folder;

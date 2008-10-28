@@ -264,16 +264,18 @@ void aucDialog::update_options3_fromcheckbox(void) {
 void aucDialog::populate_devices(void) {
   mp_ui->deviceCombo->clear();
   mp_ui->statusInfoEdit->clear();
-  try{
+  try {
     mp_creator->detect_removable_drives();
-  } catch (AtvUsbCreatorException& e){
+  }
+  catch (AtvUsbCreatorException& e) {
     mp_ui->statusInfoEdit->setText(e.what());
     mp_ui->startButton->setEnabled(false);
     return;
   }
-  const AtvUsbCreatorBase::tDeviceList& devices = mp_creator->getcrDevices();
-  for(AtvUsbCreatorBase::tDeviceList::const_iterator it = devices.begin(); it != devices.end(); ++it){
-    mp_ui->deviceCombo->addItem(QString::fromStdString(*it));
+  const QStringList& devices = mp_creator->getcrDevices();
+  QStringList::const_iterator device;
+  for( device = devices.begin(); device != devices.end(); ++device) {
+    mp_ui->deviceCombo->addItem(*device);
   }
   if(!devices.empty())
     mp_ui->startButton->setEnabled(true);
