@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.6)
 
 PROJECT( atvusb-creator )
 
+IF( NOT CMAKE_BUILD_TOOL MATCHES "cmakexbuild|msdev" )
+ IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: ${CMAKE_CONFIGURATION_TYPES}" FORCE)
+ ENDIF(NOT CMAKE_BUILD_TYPE)
+ENDIF( NOT CMAKE_BUILD_TOOL MATCHES "cmakexbuild|msdev" )
+
 SET (PROJECT_RESOURCES_DIR ${PROJECT_SOURCE_DIR}/Resources)
 
 #------ Setup the Executable output Directory ---------------------------------
@@ -154,3 +160,26 @@ IF (WIN32)
       COMPONENT Runtime
   )   
 ENDIF (WIN32)
+
+#--------- setup symlinks so dev structure looks like deployment
+#--------- windows has no symlinks, so just set the path from where executable is started to base path
+IF(UNIX)
+ IF(CMAKE_BUILD_TOOL MATCHES "cmakexbuild")
+	#using xcode
+	if(NOT EXISTS ${EXECUTABLE_OUTPUT_PATH}/Debug/payloads)
+		execute_process(COMMAND "mkdir" "-p" "${EXECUTABLE_OUTPUT_PATH}/Debug")
+ 		execute_process(COMMAND "ln" "-s" "${CMAKE_CURRENT_SOURCE_DIR}/payloads" "${EXECUTABLE_OUTPUT_PATH}/Debug/payloads")
+ 	endif(NOT EXISTS ${EXECUTABLE_OUTPUT_PATH}/Debug/payloads)
+	if(NOT EXISTS ${EXECUTABLE_OUTPUT_PATH}/Release/payloads)
+		execute_process(COMMAND "mkdir" "-p" "${EXECUTABLE_OUTPUT_PATH}/Release")
+ 		execute_process(COMMAND "ln" "-s" "${CMAKE_CURRENT_SOURCE_DIR}/payloads" "${EXECUTABLE_OUTPUT_PATH}/Release/payloads")
+ 	endif(NOT EXISTS ${EXECUTABLE_OUTPUT_PATH}/Release/payloads)
+ ELSE(CMAKE_BUILD_TOOL MATCHES "cmakexbuild")
+	#using make
+	execute_process(COMMAND "mkdir" "-p" "${EXECUTABLE_OUTPUT_PATH}")
+	if(NOT EXISTS ${EXECUTABLE_OUTPUT_PATH}/payloads)
+ 		execute_process(COMMAND "ln" "-s" "${CMAKE_CURRENT_SOURCE_DIR}/payloads" "${EXECUTABLE_OUTPUT_PATH}/payloads")
+ 	endif(NOT EXISTS ${EXECUTABLE_OUTPUT_PATH}/payloads)
+ ENDIF(CMAKE_BUILD_TOOL MATCHES "cmakexbuild")
+ENDIF(UNIX)
+
