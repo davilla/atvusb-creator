@@ -9,13 +9,22 @@
 #include "atvusbcreatorosx.h"
 
 
+//----------------------------------------------------------------------   
+//----------------------------------------------------------------------   
+AtvUsbCreatorOSX::AtvUsbCreatorOSX() : AtvUsbCreatorBase() {
+}
+
+//----------------------------------------------------------------------   
+AtvUsbCreatorOSX::~AtvUsbCreatorOSX() {
+}
+
 //---------------------------------------------------------------------- 
 void AtvUsbCreatorOSX::mount_disk() {
   QString         result;
 
   result = do_process(QString("/usr/sbin/diskutil"), QStringList() << "mountDisk" << m_drive);
   //self.log.debug('%s %s' % (status, rtn))
-  //progress.status("  mount_disk settling delay (10 seconds)")
+  //emit status(QString("  mount_disk settling delay (10 seconds)") );
   qthread::sleep(10);
 }
 

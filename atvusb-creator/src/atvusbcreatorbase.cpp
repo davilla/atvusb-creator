@@ -8,7 +8,7 @@
 
 //---------------------------------------------------------------------- 
 //---------------------------------------------------------------------- 
-AtvUsbCreatorBase::AtvUsbCreatorBase() {
+AtvUsbCreatorBase::AtvUsbCreatorBase() : QObject() {
   // find the launch path
   QDir        current_dir( QString(".") );
   

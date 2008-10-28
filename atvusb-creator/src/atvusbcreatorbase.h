@@ -75,7 +75,10 @@ struct Logger {
 };
 
 //---------------------------------------------------------------------- 
-class AtvUsbCreatorBase {
+class AtvUsbCreatorBase : public QObject
+{
+  //Q_OBJECT;
+
 public:
           AtvUsbCreatorBase();
   virtual ~AtvUsbCreatorBase();
@@ -104,7 +107,11 @@ public:
   virtual bool partition_disk();
   virtual bool install_recovery();
   virtual bool install_patchstick();
-  
+
+//signals:
+//  void progress(int);
+//  void maxprogress(int);
+//  void status(QString);
   
 protected:
   //gets populated in platform specific implementation

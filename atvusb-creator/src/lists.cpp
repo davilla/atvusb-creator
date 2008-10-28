@@ -2,62 +2,62 @@
 #include "default_list.h"
 
 //---------------------------------------------------------------------- 
-DMG_INFO& InfoData::atv_dmg_info(){
+DMG_INFO& InfoData::atv_dmg_info() {
   return default_data::atv_dmg_info;
 }
 
 //---------------------------------------------------------------------- 
-DMG_INFO& InfoData::osx_dmg_info(){
+DMG_INFO& InfoData::osx_dmg_info() {
   return default_data::osx_dmg_info;
 }
 
 //---------------------------------------------------------------------- 
-USB_INFO& InfoData::usb_info(){
+USB_INFO& InfoData::usb_info() {
   return default_data::usb_info;
 }
 
 //---------------------------------------------------------------------- 
-HFS_INFO& InfoData::hfs_info(){
+HFS_INFO& InfoData::hfs_info() {
   return default_data::hfs_info;
 }
 
 //---------------------------------------------------------------------- 
-std::vector<INSTALLER>& InfoData::installers(){
+std::vector<INSTALLER>& InfoData::installers() {
   return m_installers;
 }
 
 //---------------------------------------------------------------------- 
-std::vector<BACKUP>& InfoData::backups(){
+std::vector<BACKUP>& InfoData::backups() {
   return m_backup;
 }
 
 //---------------------------------------------------------------------- 
-std::vector<RESTORE>& InfoData::restores(){
+std::vector<RESTORE>& InfoData::restores() {
   return m_restore;
 }
 
 //---------------------------------------------------------------------- 
-std::vector<PATCHSTICK>& InfoData::patchsticks(){
+std::vector<PATCHSTICK>& InfoData::patchsticks() {
   return m_patchsticks;
 }
 
 //---------------------------------------------------------------------- 
-std::vector<PACKAGE>& InfoData::packages(){
+std::vector<PACKAGE>& InfoData::packages() {
   return m_packages;
 }
 
 //---------------------------------------------------------------------- 
-std::vector<LINUX_VIDEO>& InfoData::linux_video(){
+std::vector<LINUX_VIDEO>& InfoData::linux_video() {
   return m_linux_video;
 }
 
 //---------------------------------------------------------------------- 
-std::vector<LINUX_IR>& InfoData::linux_ir(){
+std::vector<LINUX_IR>& InfoData::linux_ir() {
   return m_linux_ir;
 }
 
 //---------------------------------------------------------------------- 
-void InfoData::populateWithDefaults(){
+void InfoData::populateWithDefaults() {
   load_installers();
   load_patchsticks();
 }

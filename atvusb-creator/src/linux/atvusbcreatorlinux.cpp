@@ -5,6 +5,7 @@
 #include <QtCore/QStringList>
 
 //----------------------------------------------------------------------   
+//----------------------------------------------------------------------   
 AtvUsbCreatorLinux::AtvUsbCreatorLinux() : AtvUsbCreatorBase() {
 }
 

@@ -45,7 +45,7 @@ class AucThread : public QThread
   Q_OBJECT;
 public:
   //TODO:thread and creator are not optional, use references
-  AucThread(AtvUsbCreatorBase* fp_creator, AucProgressThread* fp_progress, QObject* fp_parent = 0);
+  AucThread(AtvUsbCreatorBase *fp_creator, AucProgressThread *fp_progress, QObject *fp_parent = 0);
   ~AucThread();
 
   void setMaxProgress(int f_max){
@@ -64,7 +64,7 @@ signals:
   void status(QString);
     
 private:
-  AtvUsbCreatorBase* mp_creator; 
-  AucProgressThread* mp_progress; 
+  AtvUsbCreatorBase *mp_creator; 
+  AucProgressThread *mp_progress; 
 };
 #endif //AUCTHREAD_H

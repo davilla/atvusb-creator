@@ -1,15 +1,19 @@
 #include "aucprogressthread.h"
 
+//---------------------------------------------------------------------- 
+//---------------------------------------------------------------------- 
 AucProgressThread::AucProgressThread(QObject* fp_parent):
   QThread(fp_parent), m_total_size(0), m_orig_free(0), m_get_free_bytes(0)
 {
 }
 
-AucProgressThread::~AucProgressThread(){
+//---------------------------------------------------------------------- 
+AucProgressThread::~AucProgressThread() {
   wait();
 }
 
-void AucProgressThread::setData(int f_size, QString f_drive, int f_freebytes){
+//---------------------------------------------------------------------- 
+void AucProgressThread::setData(int f_size, QString f_drive, int f_freebytes) {
   m_total_size = f_size / 1024;
   m_drive = f_drive;
   m_get_free_bytes = f_freebytes;
@@ -18,7 +22,8 @@ void AucProgressThread::setData(int f_size, QString f_drive, int f_freebytes){
 }
 
 
-void AucProgressThread::run(){
+//---------------------------------------------------------------------- 
+void AucProgressThread::run() {
   while (true){
     int value = (m_orig_free - m_get_free_bytes) / 1024;
     emit progress(value);
@@ -28,7 +33,8 @@ void AucProgressThread::run(){
   }
 }
 
-void AucProgressThread::terminate(){
+//---------------------------------------------------------------------- 
+void AucProgressThread::terminate() {
 
   emit progress(m_total_size);
   QThread::terminate();

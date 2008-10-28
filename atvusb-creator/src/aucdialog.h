@@ -46,7 +46,8 @@ namespace Ui{ struct aucDialog;};
 class AtvUsbCreatorBase;
 class AucReleaseDownloader;
 
-class aucDialog : public QDialog{
+class aucDialog : public QDialog
+{
   Q_OBJECT;
 public:
   aucDialog();
@@ -54,6 +55,8 @@ public:
   
 public slots:
   void status(QString f_message);
+  void progress(int);
+  void maxprogress(int);
   
 private slots:
   void select_file(void);
@@ -75,8 +78,6 @@ private slots:
    * the error message.
    */
   void download_complete(QString f_dmg);
-  void progress(int);
-  void maxprogress(int);
 private:
   //private helpers
   void set_installers(void);
