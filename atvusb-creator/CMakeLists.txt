@@ -107,6 +107,7 @@ SET(atvusb-creator_MOC_HDRS
 	src/aucthread.h 
 	src/aucprogressthread.h 
 	src/aucreleasedownloader.h
+	src/atvusbcreatorbase.h 
 	)	
 QT4_WRAP_CPP(atvusb-creator_MOC_SRCS ${atvusb-creator_MOC_HDRS})
 

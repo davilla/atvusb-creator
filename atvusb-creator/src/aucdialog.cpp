@@ -76,9 +76,9 @@ void aucDialog::connect_slots(void) {
   connect(&m_thread,  SIGNAL(terminated()), this, SLOT(enable_widgets()));
   connect(&m_thread,  SIGNAL(progress(int)), this, SLOT(progress(int)));
   connect(&m_thread,  SIGNAL(maxprogress(int)), this, SLOT(maxprogress(int)));
-  //connect(mp_creator,  SIGNAL(status(QString)), this, SLOT(status(QString)));
-  //connect(mp_creator,  SIGNAL(progress(int)), this, SLOT(progress(int)));
-  //connect(mp_creator,  SIGNAL(maxprogress(int)), this, SLOT(maxprogress(int)));
+  connect(mp_creator,  SIGNAL(status(QString)), this, SLOT(status(QString)));
+  connect(mp_creator,  SIGNAL(progress(int)), this, SLOT(progress(int)));
+  connect(mp_creator,  SIGNAL(maxprogress(int)), this, SLOT(maxprogress(int)));
   connect(&m_progress_thread, SIGNAL(progress(int)), this, SLOT(progress(int)));
   connect(&m_progress_thread, SIGNAL(maxprogress(int)), this, SLOT(maxprogress(int)));
   connect(&m_release_downloader, SIGNAL(progress(int)), this, SLOT(progress(int)));

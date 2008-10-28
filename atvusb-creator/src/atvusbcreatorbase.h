@@ -77,7 +77,7 @@ struct Logger {
 //---------------------------------------------------------------------- 
 class AtvUsbCreatorBase : public QObject
 {
-  //Q_OBJECT;
+  Q_OBJECT;
 
 public:
           AtvUsbCreatorBase();
@@ -101,17 +101,17 @@ public:
   
   virtual void mount_disk();
   virtual void umount_disk();
-  virtual void detect_removable_drives() = 0;
+  virtual void detect_removable_drives() = 0; //throws AtvUsbCreatorException
   virtual void extract_bootefi();
   virtual bool create_image();
   virtual bool partition_disk();
   virtual bool install_recovery();
   virtual bool install_patchstick();
 
-//signals:
-//  void progress(int);
-//  void maxprogress(int);
-//  void status(QString);
+signals:
+  void progress(int);
+  void maxprogress(int);
+  void status(QString);
   
 protected:
   //gets populated in platform specific implementation

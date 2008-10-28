@@ -110,6 +110,7 @@ void AtvUsbCreatorBase::detect_removable_drives(){
 
 //----------------------------------------------------------------------   
 void AtvUsbCreatorBase::extract_bootefi(){
+  emit status("Extracting boot.efi ...");
   assert(0 && "implement me!");
 }
 
