@@ -3,7 +3,7 @@
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusReply>
 #include <QtCore/QStringList>
-
+#include <cassert>
 //----------------------------------------------------------------------   
 //----------------------------------------------------------------------   
 AtvUsbCreatorLinux::AtvUsbCreatorLinux() : AtvUsbCreatorBase() {
@@ -69,14 +69,14 @@ void AtvUsbCreatorLinux::detect_removable_drives()
     bool removable = callAndReturnResponse<QVariant::Bool>(device, "GetPropertyBoolean", "storage.removable" ).toBool();
     if(bus == "usb" && removable){
       if(callAndReturnResponse<QVariant::Bool>(device, "GetPropertyBoolean", "block.is_volume" ).toBool()){
-        m_devices.push_back(callAndReturnResponse<QVariant::String>(device, "GetPropertyString", "block.device").toString().toStdString());
+        m_devices << callAndReturnResponse<QVariant::String>(device, "GetPropertyString", "block.device").toString();
       } else {
         QStringList children = callAndReturnResponse<QVariant::StringList>(computer, "FindDeviceStringMatch", "info.parent", current_device_string).toStringList();
         for(unsigned int k = 0; k<children.size(); ++k){
           QString child_device_string = children[k];
           QDBusInterface child_device("org.freedesktop.Hal", child_device_string, "org.freedesktop.Hal.Device" , QDBusConnection::systemBus());
           if(callAndReturnResponse<QVariant::Bool>(child_device, "GetPropertyBoolean", "block.is_volume" ).toBool()){
-            m_devices.push_back(callAndReturnResponse<QVariant::String>(device, "GetPropertyString", "block.device").toString().toStdString());
+            m_devices << callAndReturnResponse<QVariant::String>(device, "GetPropertyString", "block.device").toString();
           }
       }
     }
