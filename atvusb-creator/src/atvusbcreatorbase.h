@@ -102,7 +102,9 @@ public:
   virtual void mount_disk();
   virtual void umount_disk();
   virtual void detect_removable_drives() = 0; //throws AtvUsbCreatorException
-  virtual void extract_bootefi();
+  virtual void extract_bootefi() = 0;
+  virtual void extract_recovery();
+  virtual bool verify_image();
   virtual bool create_image();
   virtual bool partition_disk();
   virtual bool install_recovery();

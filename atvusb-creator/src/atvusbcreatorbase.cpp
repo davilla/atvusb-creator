@@ -2,7 +2,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QProcess>
 #include <QtCore/QFileInfo>
-
+#include <QtCore/QCryptographicHash>
 #include "atvusbcreatorbase.h"
 #include <cassert>
 
@@ -109,12 +109,6 @@ void AtvUsbCreatorBase::detect_removable_drives(){
 }
 
 //----------------------------------------------------------------------   
-void AtvUsbCreatorBase::extract_bootefi(){
-  emit status("Extracting boot.efi ...");
-  assert(0 && "implement me!");
-}
-
-//----------------------------------------------------------------------   
 bool AtvUsbCreatorBase::create_image(){
   assert(0 && "implement me!");
   return false;
@@ -135,6 +129,32 @@ bool AtvUsbCreatorBase::install_recovery(){
 //----------------------------------------------------------------------   
 bool AtvUsbCreatorBase::install_patchstick(){
   assert(0 && "implement me!");
+  return false;
+}
+
+//----------------------------------------------------------------------   
+void AtvUsbCreatorBase::extract_recovery(){
+  assert(0 && "implement me!");
+}
+
+//----------------------------------------------------------------------   
+bool AtvUsbCreatorBase::verify_image(){
+  const int READBLOCK_SIZE=1024*1024;
+  QFile file(m_dmg_path);
+  emit maxprogress(file.size());
+  int read_bytes = 0;
+	QCryptographicHash sha1Hash(QCryptographicHash::Sha1);
+	if (file.open(QIODevice::ReadOnly | QIODevice::Unbuffered)) {		
+		while (!file.atEnd()){
+			sha1Hash.addData(file.read(READBLOCK_SIZE));
+      read_bytes += READBLOCK_SIZE;
+      emit progress(read_bytes);
+    }
+	}
+	file.close();
+  const QByteArray given(QByteArray::fromHex(getrInfoData().atv_dmg_info().sha1.c_str()));
+  if(given == sha1Hash.result())
+    return true;
   return false;
 }
 

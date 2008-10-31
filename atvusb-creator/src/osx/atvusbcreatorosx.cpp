@@ -24,7 +24,7 @@ void AtvUsbCreatorOSX::mount_disk() {
 
   result = do_process(QString("/usr/sbin/diskutil"), QStringList() << "mountDisk" << m_drive);
   //self.log.debug('%s %s' % (status, rtn))
-  //emit status(QString("  mount_disk settling delay (10 seconds)") );
+  emit status(QString("  mount_disk settling delay (10 seconds)") );
   qthread::sleep(10);
 }
 
@@ -34,7 +34,7 @@ void AtvUsbCreatorOSX::umount_disk() {
 
   result = do_process(QString("/usr/sbin/diskutil"), QStringList() << "unmountDisk" << m_drive);
   //self.log.debug('%s %s' % (status, rtn))
-  //progress.status("  umount_disk settling delay (10 seconds)")
+  emit status("  umount_disk settling delay (10 seconds)");
   qthread::sleep(10);
 }
 
@@ -103,9 +103,9 @@ void AtvUsbCreatorOSX::extract_bootefi() {
   QString         mount_point;
   QString         bootefi_src, osboot;
 
-  //progress.status("Extracting boot.efi ...")
-  //progress.update_progress(0)
-  //progress.set_max_progress(100)
+  emit status("Extracting boot.efi ...");
+  emit progress(0);
+  emit maxprogress(100);
   // mount the dmg disk image
   // TODO: need a temporary mount point, this is messy
   QDir            current_dir( QString(".") );
@@ -124,17 +124,17 @@ void AtvUsbCreatorOSX::extract_bootefi() {
   //if
   //    self.log.warning("Unable to mount device: %s" %(rtn) )
   //    return
-  //progress.update_progress(33)
+  emit progress(33);
   // copy boot.efi to staging
   bootefi_src = mount_point + "/OSBoot/usr/standalone/i386/boot.efi";
   result = do_process(QString("cp"), QStringList() << bootefi_src << m_bootefi_path);
-  //progress.update_progress(66)
+  emit progress(66);
   // unmount the dmg disk image
   osboot =  mount_point + "/OSBoot";
   result = do_process(QString("hdiutil"), QStringList() << "detach" << osboot);
   //if status:
   //    self.log.warning("Unable to unmount AppleTV Update DMG")
-  //progress.update_progress(100)                    
+  emit progress(100);
 
   /*
   progress.status("Extracting boot.efi ...")
