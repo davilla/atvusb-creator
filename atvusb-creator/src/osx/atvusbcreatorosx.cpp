@@ -175,40 +175,40 @@ void AtvUsbCreatorOSX::extract_7z_image(QString const& fcr_archive_path, QString
 
 //---------------------------------------------------------------------- 
 bool AtvUsbCreatorOSX::create_image() {
-  bool          status;
-  //progress.status("Creating USB Flash Disk...")
-  //progress.update_progress(0)
-  //progress.set_max_progress(100)
+  bool ret;
+  emit status("Creating USB Flash Disk...");
+  emit progress(0);
+  emit maxprogress(100);
 
   // unmount the target disk
   umount_disk();
 
   // partition the target disk
-  //progress.update_progress(25)
-  //progress.status("  partition the target disk")
-  status = partition_disk();
-  if (!status) {
-      //progress.status("  partition_disk failed")
-      return status;
+  emit progress(25);
+  emit status("  partition the target disk");
+  ret = partition_disk();
+  if (!ret) {
+    emit status("  partition_disk failed");
+    return ret;
   }
   // install recovery onto target disk
-  //progress.update_progress(50)
-  //progress.status("  install recovery onto target disk")
-  status = install_recovery();
-  if (!status) {
-      //progress.status("  install_recovery failed")
-      return status;
+  emit progress(50);
+  emit status("  install recovery onto target disk");
+  ret = install_recovery();
+  if (!ret) {
+      emit status("  install_recovery failed");
+      return ret;
   }
   // install patchstick onto target disk
-  //progress.update_progress(75)
-  //progress.status("  install patchstick onto target disk")
-  status = install_patchstick();
-  if (!status) {
-      //progress.status("  install_patchstick failed")
-      return status;
+  emit progress(75);
+  emit status("  install patchstick onto target disk");
+  ret = install_patchstick();
+  if (!ret) {
+      emit status("  install_patchstick failed");
+      return ret;
   }
-  //progress.update_progress(100)
-  //umount_disk()
+  emit progress(100);
+  umount_disk();
 
   return true;
 }
