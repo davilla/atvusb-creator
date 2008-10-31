@@ -160,7 +160,18 @@ void AtvUsbCreatorOSX::extract_bootefi() {
       self.log.warning("Unable to unmount AppleTV Update DMG")
   progress.update_progress(100)                    
   */
-}                    
+}   
+                 
+//---------------------------------------------------------------------- 
+void AtvUsbCreatorOSX::extract_7z_image(QString const& fcr_archive_path, QString const& fcr_hfs_image_path, QString const& fcr_staging_folder){
+  assert(QFile::exists(fcr_archive_path));
+  assert(!QFile::exists(fcr_hfs_image_path));
+  emit status(QString("  extracting %1").arg(fcr_archive_path));
+  const QString cmd = "tools/osx/7za";
+  int ret = QProcess::execute(cmd, QStringList() << "e" << "-bd" << "-y" << "-o" << fcr_staging_folder << fcr_archive_path);
+  if(ret)
+    emit status(QString(" unable to extract %1").arg(fcr_archive_path));
+}
 
 //---------------------------------------------------------------------- 
 bool AtvUsbCreatorOSX::create_image() {

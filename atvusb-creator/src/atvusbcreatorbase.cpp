@@ -134,7 +134,12 @@ bool AtvUsbCreatorBase::install_patchstick(){
 
 //----------------------------------------------------------------------   
 void AtvUsbCreatorBase::extract_recovery(){
-  assert(0 && "implement me!");
+  const QString hfs_image_path = m_staging_folder + QDir::separator() + QString::fromStdString(getrInfoData().hfs_info().name);
+  if(!QFile::exists(hfs_image_path)){
+    emit status("Extracting recovery seed ...");
+    const QString archive_path = m_payload_folder + QDir::separator() + QString::fromStdString(getrInfoData().hfs_info().file);
+    extract_7z_image(archive_path, hfs_image_path, m_staging_folder);
+  }
 }
 
 //----------------------------------------------------------------------   

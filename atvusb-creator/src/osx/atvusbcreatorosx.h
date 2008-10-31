@@ -50,6 +50,7 @@ public:
   // Detect all removable USB storage devices using DiskUtil
   virtual void detect_removable_drives();
   virtual void extract_bootefi();
+  virtual void extract_7z_image(QString const& fcr_archive_path, QString const& fcr_hfs_image_path, QString const& fcr_staging_folder);
   virtual bool create_image();
   virtual bool partition_disk();
   virtual bool install_recovery();

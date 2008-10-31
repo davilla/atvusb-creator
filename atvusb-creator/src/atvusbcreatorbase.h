@@ -103,6 +103,7 @@ public:
   virtual void umount_disk();
   virtual void detect_removable_drives() = 0; //throws AtvUsbCreatorException
   virtual void extract_bootefi() = 0;
+  virtual void extract_7z_image(QString const& fcr_archive_path, QString const& fcr_hfs_image_path, QString const& fcr_staging_folder) = 0;
   virtual void extract_recovery();
   virtual bool verify_image();
   virtual bool create_image();
