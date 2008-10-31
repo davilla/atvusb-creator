@@ -332,30 +332,31 @@ bool AtvUsbCreatorOSX::install_recovery() {
 
 //---------------------------------------------------------------------- 
 bool AtvUsbCreatorOSX::install_patchstick() {
-/*
-  os_cmd = 'mount_msdos "%s" "%s"' %(self.drive_patchstick , self.tmp_folder)
-  #os_cmd = 'mount_hfs "%s" "%s"' %(self.drive_patchstick , self.tmp_folder)
-  [status, rtn] = commands.getstatusoutput(os_cmd)
-  if status:
-      progress.status("Unable to mount PATCHSTICK: %s" %(rtn) )
-      return False
-
-  progress.status("  copy files to target disk")
-  # now install the payloads onto the "PATCHSTICK" volume        
-  for installer in installers:
-      if installer['install']:
-          self.install_payload(installer, self.tmp_folder)
-          break
-  # always sync to force to physical disk
-  commands.getstatusoutput('sync')
-          
-  os_cmd = 'umount -f "%s"' %(self.tmp_folder)
-  [status, rtn] = commands.getstatusoutput(os_cmd)
-  if status:
-      progress.status("Unable to unmount PATCHSTICK: %s" %(rtn) )
-      return False
-      
-  return True
-*/
+  assert(m_drive_patchstick.count());
+  int ret = QProcess::execute("mount_msdos", QStringList() 
+                              << m_drive_patchstick << m_tmp_folder);
+  if(ret){
+    emit status(QString("Unable to mount PATCHSTICK: %1").arg(ret) );
+    return false;
+  }
+  emit status("  copy files to target disk");
+  // now install the payloads onto the "PATCHSTICK" volume
+  std::vector<INSTALLER>::const_iterator it = getrInfoData().installers().begin();
+  std::vector<INSTALLER>::const_iterator end = getrInfoData().installers().end();
+  for(;it != end; ++it){
+    if(it->install){
+      install_payload(*it, m_tmp_folder);
+      break;
+    }
+  }
+  //always sync to force to physical disk
+  QProcess::execute("sync");
+  ret = QProcess::execute("umount", QStringList()
+                          << "-f" << m_tmp_folder
+                          );
+  if(ret){
+    emit status(QString("Unable to unmount PATCHSTICK: %1").arg(ret) );
+    return false;
+  }
   return true;
 }

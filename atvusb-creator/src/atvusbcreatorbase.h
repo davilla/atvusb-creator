@@ -110,6 +110,7 @@ public:
   virtual bool partition_disk();
   virtual bool install_recovery();
   virtual bool install_patchstick();
+  virtual bool install_payload(INSTALLER const& fcr_installer, QString const& fcr_mount_point);
 
 signals:
   void progress(int);
@@ -123,7 +124,7 @@ protected:
   QString                 m_dmg_path;
   QString                 m_bootefi_path;
   QString                 m_tmp_folder;
-    
+  QString                 m_drive_patchstick;
 private:
   Logger                  m_logger;
   InfoData                m_info_data;

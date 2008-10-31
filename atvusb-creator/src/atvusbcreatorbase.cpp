@@ -133,6 +133,12 @@ bool AtvUsbCreatorBase::install_patchstick(){
 }
 
 //----------------------------------------------------------------------   
+bool AtvUsbCreatorBase::install_payload(INSTALLER const& fcr_installer, QString const& fcr_mount_point){
+  assert(0 && "implement me!");
+  return false;
+}
+
+//----------------------------------------------------------------------   
 void AtvUsbCreatorBase::extract_recovery(){
   const QString hfs_image_path = m_staging_folder + QDir::separator() + QString::fromStdString(getrInfoData().hfs_info().name);
   if(!QFile::exists(hfs_image_path)){
