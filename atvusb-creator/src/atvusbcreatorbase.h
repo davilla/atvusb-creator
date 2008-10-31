@@ -119,12 +119,13 @@ protected:
   QString                 m_drive;
   QString                 m_dmg_path;
   QString                 m_bootefi_path;
-  
+  QString                 m_tmp_folder;
+    
 private:
   Logger                  m_logger;
   InfoData                m_info_data;
   // absolute paths to various items/folders
-  QString                 m_tmp_folder;
+
   QString                 m_payload_folder;
   QString                 m_staging_folder;
   QString                 m_download_folder;

@@ -3,6 +3,8 @@
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusReply>
 #include <QtCore/QStringList>
+#include <QtCore/QDir>
+#include <QtCore/QProcess>
 #include <cassert>
 //----------------------------------------------------------------------   
 //----------------------------------------------------------------------   
@@ -39,12 +41,24 @@ namespace {
 
 //----------------------------------------------------------------------   
 void AtvUsbCreatorLinux::mount_disk() {
-  assert(0 && "implement me!");
+  assert(0 && "implement me! or better, what's the volume path?");
+  QString volume_path; // = ????
+  unsigned int retries = 5;
+  QDir dir(volume_path);
+  while (! dir.exists() && retries--) {
+      QProcess::execute("partprobe", QStringList() << m_drive);
+      emit status(QString("rescanning partition table failed to mount %1").arg(volume_path));
+      qthread::sleep(1);
+  }
 }
 
 //----------------------------------------------------------------------   
 void AtvUsbCreatorLinux::umount_disk() {
-  assert(0 && "implement me!");
+  assert(0 && "implement me! fixup drives list");
+  QString mount_point; // = self.drives[self.drive]['mount']
+  QDir dir(mount_point);
+  if( dir.exists() )
+    QProcess::execute("umount ", QStringList() << mount_point);
 }
 
 //----------------------------------------------------------------------   
@@ -95,7 +109,46 @@ void AtvUsbCreatorLinux::detect_removable_drives()
 
 //----------------------------------------------------------------------   
 void AtvUsbCreatorLinux::extract_bootefi(){
-  assert(0 && "implement me!");
+  emit status("Extracting boot.efi ...");
+  emit progress(0);
+  emit maxprogress(100);
+  QDir temp_dir(QDir::tempPath() + QDir::separator() + "atvusb-creatorExtractTemp");
+  if(!temp_dir.exists())
+    if(!temp_dir.mkpath(temp_dir.absolutePath())){
+      emit status(QString("Could not create tempdir %1").arg(temp_dir.absolutePath()));
+      return;
+    }
+  emit status(temp_dir.absolutePath());
+  int exit_code = QProcess::execute("dmg2img ", QStringList() << m_dmg_path);
+  if(exit_code){
+    emit status("Ouch,  could not convert dmg2img");
+    temp_dir.rmpath ( temp_dir.absolutePath() );
+    return;
+  }
+  QString img_path = m_dmg_path;
+  img_path[img_path.count() -1]='g';
+  img_path[img_path.count() -2]='m';
+  img_path[img_path.count() -3]='i';
+  emit status(m_dmg_path);
+  emit status(img_path);
+  emit progress(33);
+  exit_code = QProcess::execute("mount -t hfsplus -o loop ", QStringList() << img_path << temp_dir.absolutePath());
+  if(exit_code){
+    emit status("Ouch, could not mount dmg2img'ed image");
+    temp_dir.rmpath ( temp_dir.absolutePath() );
+    return;
+  }      
+  QString bootefi_src = temp_dir.absolutePath() + QDir::separator() + "System" + QDir::separator() + " Library" + QDir::separator() + "CoreServices" + QDir::separator() + "boot.efi";
+  if(!QFile::copy(bootefi_src, m_bootefi_path)){
+    emit status(QString("Ouch, could not copy %1 to %2").arg(bootefi_src).arg(m_bootefi_path));
+  }
+  emit progress(66);
+  exit_code = QProcess::execute("umount", QStringList() << m_tmp_folder);
+  if(exit_code){
+    emit status(QString("Could not umount %1").arg(m_tmp_folder));
+  }
+  emit progress(100);
+  temp_dir.rmpath ( temp_dir.absolutePath() );
 }
 
 //----------------------------------------------------------------------   

@@ -1,6 +1,9 @@
-#include <cassert>
-
 #include "aucthread.h"
+
+#include <cassert>
+#include <QtCore/QDateTime>
+#include <QtCore/QFile>
+
 #include "aucprogressthread.h"
 #include "atvusbcreatorbase.h"
 
@@ -18,35 +21,38 @@ AucThread::~AucThread(){
 
 //---------------------------------------------------------------------- 
 void AucThread::run(){
-  assert(0);
-/*
-  now = datetime.now()
-  try:
-# if boot.efi is not present, extract it from the dmg
-  if not os.path.exists(self.live.bootefi):
-# If the DMG looks familar, verify it's SHA1SUM
-if not self.parent.opts.noverify:
-if self.live.get_atv_dmg_info():
-self.status("Verifying SHA1 of DMG image...")
-if not self.live.verify_image(progress=self):
-self.status("Error: The SHA1 of your AppleTV Update DMG is "
-"invalid.  You can run this program with "
-"the --noverify argument to bypass this "
-"verification check.")
-return
-self.live.extract_bootefi(progress=self)
-#
+  QDateTime now = QDateTime::currentDateTime();
+
+  try{
+    //if boot.efi is not present, extract it from the dmg
+    if(!QFile::exists(mp_creator->getcrBootEFIPath())){
+      //If the DMG looks familar, verify it's SHA1SUM
+      //TODO: false should read: if not self.parent.opts.noverify:
+      if(false){
+//         if self.live.get_atv_dmg_info():
+         emit status("Verifying SHA1 of DMG image...");
+//         if not self.live.verify_image(progress=self):
+        emit status("Error: The SHA1 of your AppleTV Update DMG is "
+        "invalid.  You can run this program with "
+        "the --noverify argument to bypass this "
+        "verification check.");
+        return;
+      }
+      mp_creator->extract_bootefi();
+    }
+    bool ret = false;
+    /*
 self.live.extract_recovery(progress=self)
 status = self.live.create_image(progress=self)
 #
-duration = str(datetime.now() - now).split('.')[0]
-if (status == False): 
-self.status("Failed! (%s)" % duration)
-else:
-self.status("Complete! (%s)" % duration)
-
-except LiveUSBError, e:
-self.status(str(e))
-self.status("ATV-Bootloader creation failed!")
-*/
+    */
+  int duration = now.secsTo(QDateTime::currentDateTime());
+  if (!ret)
+    emit status(QString("Failed! (%1 sec)").arg(duration));
+  else
+    emit status(QString("Complete! (%1 sec)").arg(duration));
+  } catch(AtvUsbCreatorException& e){
+    emit status(QString::fromStdString(e.what()));
+    emit status("ATV-Bootloader creation failed!");
+  }
 }
