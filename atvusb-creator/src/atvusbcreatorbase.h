@@ -42,25 +42,19 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <qthread.h>
+#include <QtCore/QThread.h>
+#include "lists.h"
 
-// google say do this for sleeping :)
-class qthread : public QThread
+// dummy helper to get access to QThreads protected sleep methods
+struct qthread : public QThread
 {
 public:
-	static void sleep(unsigned long secs) {
-		QThread::sleep(secs);
-	}
-	static void msleep(unsigned long msecs) {
-		QThread::msleep(msecs);
-	}
-	static void usleep(unsigned long usecs) {
-		QThread::usleep(usecs);
-	}
+ using QThread::sleep;
+ using QThread::msleep;
+ using QThread::usleep;
+private:
+  qthread();
 };
-
-
-#include "lists.h"
 
 struct AtvUsbCreatorException : public std::runtime_error{
   AtvUsbCreatorException(const std::string &fcr_message):std::runtime_error(fcr_message){
