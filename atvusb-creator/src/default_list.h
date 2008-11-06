@@ -43,7 +43,7 @@ USB_INFO usb_info = {
 // hdiutil detach tmp
 HFS_INFO hfs_info = {
   "atv_recv.img",
-  "atv_recv.img.zip",
+  "atv_recv.7z",
   "0000000000000000000000000000000000000000",
   51000 * 512,
   "hfsplus",

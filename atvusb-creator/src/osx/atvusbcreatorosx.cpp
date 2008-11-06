@@ -45,7 +45,7 @@ void AtvUsbCreatorOSX::detect_removable_drives() {
   QStringList::const_iterator device;
   
   m_devices.clear();
-
+  m_device_infos.clear();
   result = do_process(QString("/usr/sbin/diskutil"), QStringList() << "list");
   devices << result.split('\n');
   
@@ -77,16 +77,10 @@ void AtvUsbCreatorOSX::detect_removable_drives() {
       
       if (protocol == "USB" && ejectable == "Yes") {
         m_devices << *device;
-        //TODO: what is the other stuff for?
-        /*
-         //
-         //label = None
-         self.drives[drive] = {
-         'mount'   : drive,
-         'udi'     : None,
-         'mounted' : False,
-         }
-         */
+        tDeviceInfo info;
+        info.name = *device;
+        info.mounted = false;
+        m_device_infos.insert(std::make_pair(*device, info));                                
       }
     }
   }
@@ -168,7 +162,7 @@ void AtvUsbCreatorOSX::extract_7z_image(QString const& fcr_archive_path, QString
   assert(!QFile::exists(fcr_hfs_image_path));
   emit status(QString("  extracting %1").arg(fcr_archive_path));
   const QString cmd = "tools/osx/7za";
-  int ret = QProcess::execute(cmd, QStringList() << "e" << "-bd" << "-y" << "-o" << fcr_staging_folder << fcr_archive_path);
+  int ret = QProcess::execute(cmd, QStringList() << "e" << "-bd" << "-y" << QString("-o"+fcr_staging_folder) << fcr_archive_path);
   if(ret)
     emit status(QString(" unable to extract %1").arg(fcr_archive_path));
 }
@@ -215,39 +209,39 @@ bool AtvUsbCreatorOSX::create_image() {
 
 //---------------------------------------------------------------------- 
 bool AtvUsbCreatorOSX::partition_disk() {
-/*
-  # create a GPT format direct on the flash drive
-  os_cmd = 'diskutil partitionDisk %s 2 GPTFormat ' %(self.drive)
-  os_cmd = os_cmd + '"HFS+" "Recovery" 26112000B '
-  os_cmd = os_cmd + '"MS-DOS FAT32" "PATCHSTICK" 485785600B'
-  #os_cmd = os_cmd + '"HFS+" "PATCHSTICK" 485785600B'
-  [status, rtn] = commands.getstatusoutput(os_cmd)
-  if status:
-      progress.status("Unable to partition device: %s" %(rtn) )
-      return False
-      
-  time.sleep(10)
-  self.umount_disk(progress)
-
-  if 'EFI' in rtn:
-      # disk is large enough for diskutil to automatically
-      # insert an EFI partition as the first partition
-      self.drive_efi = True;
-      self.drive_recovery = self.drive + 's2'
-      self.drive_patchstick = self.drive + 's3'
-      self.log.info("diskutil included EFI on device: %s" %(self.drive) )
-  else:
-      self.drive_efi = False;
-      self.drive_recovery = self.drive + 's1'
-      self.drive_patchstick = self.drive + 's2'
-
-  return True
-  */
+  QString ret;
+  try{
+    QStringList args = QStringList()
+      << "partitionDisk" << m_drive << "2" << "GPTFormat"
+      << "HFS+"  << "Recovery" << "26112000B" 
+      << "MS-DOS FAT32" << "PATCHSTICK" << "485785600B";
+      //os_cmd = os_cmd + '"HFS+" "PATCHSTICK" 485785600B';
+    ret = do_process("/usr/sbin/diskutil", args);
+  } catch (AtvUsbCreatorException& e){
+    emit status(QString(" unable to partition device: %1 \nError: %2").arg(m_drive).arg(e.what()));
+    return false;
+  }
+  emit status(QString("  partitioned device: %1 \n Unmounting...").arg(m_drive));
+  qthread::sleep(10);      
+  umount_disk();
+  if(ret.indexOf("EFI") != -1){
+      // disk is large enough for diskutil to automatically
+      // insert an EFI partition as the first partition
+      m_drive_efi = true;
+      m_drive_recovery = m_drive + "s2";
+      m_drive_patchstick = m_drive + "s3";
+    emit status(QString("diskutil included EFI on device: %1").arg(m_drive) );
+  } else {
+    m_drive_efi = false;
+    m_drive_recovery = m_drive + "s1";
+    m_drive_patchstick = m_drive + "s2";
+  }
   return true;
 }
 
 //---------------------------------------------------------------------- 
 bool AtvUsbCreatorOSX::install_recovery() {
+  assert(0);
 /*
   # mount recovery partition at our specific mount point so we can find it
   os_cmd = 'mount_hfs "%s" "%s"' %(self.drive_recovery , self.tmp_folder)

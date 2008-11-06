@@ -112,13 +112,23 @@ signals:
   void status(QString);
   
 protected:
+  struct tDeviceInfo{
+    QString name;
+    QString label;
+    QString mount;
+    bool mounted;
+  };
   //gets populated in platform specific implementation
-  QStringList             m_devices;
+  QStringList             m_devices; //this is a QStringList for gui usage
+  std::map<QString, tDeviceInfo> m_device_infos;
   QString                 m_drive;
   QString                 m_dmg_path;
   QString                 m_bootefi_path;
   QString                 m_tmp_folder;
+  bool                    m_drive_efi;
+  QString                 m_drive_recovery;
   QString                 m_drive_patchstick;
+  
 private:
   Logger                  m_logger;
   InfoData                m_info_data;

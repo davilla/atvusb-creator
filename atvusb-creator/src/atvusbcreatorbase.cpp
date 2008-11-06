@@ -88,7 +88,8 @@ QString AtvUsbCreatorBase::do_process(const QString &program, const QStringList 
     throw AtvUsbCreatorException((program + " could not be started").toStdString());
   if (!process.waitForFinished())
     throw AtvUsbCreatorException((program + " exited with failure %1").arg(process.exitCode()).toStdString());
-
+  if(process.exitCode())
+    throw AtvUsbCreatorException((program + " exited with failure %1").arg(process.exitCode()).toStdString());
   result = QString::fromLatin1(process.readAllStandardOutput());
   
   return(result);
