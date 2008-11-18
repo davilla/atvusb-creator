@@ -3,18 +3,6 @@
 <plist version="1.0">
 <array>
 	<dict>
-		<key>UpdateScript</key>
-		<string>http://atv-xbmc-launcher.googlecode.com/svn/tags/boxee-info/scripts/alpha-0.9.3964_update.sh</string>
-		<key>URL</key>
-		<string>http://dl.boxee.tv/boxee-0.9.3964.dmg</string>
-		<key>Type</key>
-		<string>Application</string>
-		<key>Name</key>
-		<string>Boxee alpha 0.9.3964</string>
-		<key>MD5</key>
-		<string>32252deff45b3c8a1510a8517b071ed0</string>
-	</dict>
-	<dict>
 		<key>Name</key>
 		<string>XBMC/Boxee Launcher 0.6</string>
 		<key>Type</key>
