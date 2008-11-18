@@ -258,3 +258,77 @@ diskutil partitionDisk /dev/disk1 1 MBRFormat "MS-DOS FAT32" "PATCHSTICK" 261120
 diskutil unmountDisk /dev/disk1
 
 hdiutil detach /dev/disk1
+
+
+
+*******************************
+dd if=/dev/zero of=atv256MB_disk.img bs=256 count=1000000
+gpt create atv256MB_disk.img
+gpt -r show atv256MB_disk.img
+
+# HFS+
+gpt add -b 40 -i 1 -s 51000 -t "48465300-0000-11AA-AA11-00306543ECAC" atv256MB_disk.img
+# MS (basic data partition)
+gpt add -b 51040 -i 2 -s 448900 -t "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7" atv256MB_disk.img
+
+hdiutil attach -nomount -noverify -noautofsck atv256MB_disk.img
+
+diskutil eraseVolume "HFS+" "Recovery" /dev/disk1s1
+diskutil eraseVolume "MS-DOS FAT32" "PATCHSTICK" /dev/disk1s2
+
+
+gpt remove -i 1 atv256MB_disk.img
+# HFS+ Recovery
+gpt add -b 40 -i 1 -s 51000 -t "5265636F-7665-11AA-AA11-00306543ECAC" atv256MB_disk.img
+
+
+Skunkworks:davilla$ hfsdebug /Volumes/Recovery\ 1/boot.efi 
+  <Catalog B-Tree node = 1 (sector 0x1a0)>
+  path                 = Recovery:/boot.efi
+# Catalog File Record
+  type                 = file
+  file ID              = 17
+  flags                = 0000000000000010
+                       . File has a thread record in the catalog.
+  reserved1            = 0
+  createDate           = Sat Sep 27 16:49:51 2008
+  contentModDate       = Sat Sep 27 16:49:51 2008
+  attributeModDate     = Sat Sep 27 16:49:51 2008
+  accessDate           = Wed Nov 12 13:55:40 2008
+  backupDate           = Fri Jan  1 00:00:00 1904
+  # BSD Info
+  ownerID              = 0 (root)
+  groupID              = 0 (wheel)
+  adminFlags           = 00000000
+  ownerFlags           = 00000000
+  fileMode             = -rw-r--r--
+  linkCount            = 1
+  textEncoding         = 0
+  attrBlocks           = 0
+  # Finder Info
+  fdType               = 0x3f3f3f3f (????)
+  fdCreator            = 0x3f3f3f3f (????)
+  fdFlags              = 0000000000000000
+  fdLocation           = (v = 0, h = 0)
+  opaque               = 0
+  # Data Fork
+  logicalSize          = 298800 bytes
+  totalBlocks          = 73
+  fork temperature     = no HFC record in B-Tree
+  clumpSize            = 0
+  extents              =   startBlock   blockCount      % of file
+                                 0x64         0x49       100.00 %
+                         73 allocation blocks in 1 extents total.
+                         73.00 allocation blocks per extent on an average.
+  # Resource Fork
+  logicalSize          = 0 bytes
+
+******************************************
+1.0.0: OS-dot-DMG 1.0.dmg
+1.1.0: 2Z694-5248-45.dmg
+2.0.0: 2Z694-5274-109.dmg
+2.0.1: 2Z694-5387-25.dmg
+2.0.2: 2Z694-5428-3.dmg
+2.1.0: 2Z694-5485-1.dmg
+2.2.0: 2Z694-5499.dmg
+

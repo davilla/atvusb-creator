@@ -1,11 +1,15 @@
 # openssl dgst -sha1
 atv_dmg_info = (
     {
-        'name': 'AppleTV Update 2.1',
-        'url' : 'http://mesu.apple.com/data/OS/061-4632.2080414.gt5rW/2Z694-5428-3.dmg',
-        'sha1': '65151a796164f202f0e0aa3554c5e9cad74e149d',
+        'name': 'AppleTV Update 2.2',
+        'url' : 'http://mesu.apple.com/data/OS/061-5262.20081002.tvap9/2Z694-5499.dmg',
+        'sha1': 'ed7256ee03b3a3fc5e0004089157f9b3ff3e6d4e',
     },
 )
+#        'name': 'AppleTV Update 2.1',
+#        'url' : 'http://mesu.apple.com/data/OS/061-4632.2080414.gt5rW/2Z694-5428-3.dmg',
+#        'sha1': '65151a796164f202f0e0aa3554c5e9cad74e149d',
+
 #        'name': 'AppleTV Update 2.2',
 #        'url' : 'http://mesu.apple.com/data/OS/061-5262.20081002.tvap9/2Z694-5499.dmg',
 #        'sha1': 'ed7256ee03b3a3fc5e0004089157f9b3ff3e6d4e',
@@ -77,7 +81,7 @@ installers = (
     {
         'name'   : 'ATV-Patchstick',
         'pict'   : ':atv-patchstick.png',
-        'url'    : 'http://www.atvmod.googlecode.com',
+        'url'    : 'http://atvusb-creator.googlecode.com',
         'sha1'   : '0000000000000000000000000000000000000000',
         'enable' : True,
         'install': False,
@@ -88,7 +92,7 @@ installers = (
     {
         'name'   : 'ATV Factory Restore',
         'pict'   : ':/restore.png',
-        'url'    : 'http://www.atvmod.googlecode.com',
+        'url'    : 'http://atvusb-creator.googlecode.com',
         'sha1'   : '0000000000000000000000000000000000000000',
         'enable' : False,
         'install': False,
@@ -99,7 +103,7 @@ installers = (
     {
         'name'  : 'USB - XBMC for Linux',
         'pict'  : ':/xbmc.png',
-        'url'   : 'http://www.atvmod.com',
+        'url'   : 'http://atvusb-creator.googlecode.com',
         'sha1'  : '0000000000000000000000000000000000000000',
         'enable': False,
         'install': False,
@@ -132,7 +136,7 @@ installers = (
     {
         'name'   : 'USB - Mythbuntu',
         'pict'   : ':/mythbuntu.png',
-        'url'    : 'http://www.atvmod.com',
+        'url'    : 'http://atvusb-creator.googlecode.com',
         'sha1'   : '0000000000000000000000000000000000000000',
         'enable' : False,
         'install': False,
@@ -143,7 +147,7 @@ installers = (
     {
         'name'   : 'USB - Knoppmyth',
         'pict'   : ':/knoppmyth.png',
-        'url'    : 'http://www.atvmod.com',
+        'url'    : 'http://atvusb-creator.googlecode.com',
         'sha1'   : '0000000000000000000000000000000000000000',
         'enable' : False,
         'install': False,
@@ -205,7 +209,7 @@ packages = (
         'enable' : True,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
         'install': True,
-        'url'    : 'http://www.atvusb-creator.com',
+        'url'    : 'binutils.tar.gz',
         'type'   : 'package',
         'pkgname': 'dropbear',
         'loader' : 'install.sh'
@@ -215,7 +219,7 @@ packages = (
         'enable' : True,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
         'install': True,
-        'url'    : 'http://www.atvusb-creator.com',
+        'url'    : 'dropbear.tar.gz',
         'type'   : 'package',
         'pkgname': 'binutils',
         'loader' : 'install.sh'
@@ -297,7 +301,7 @@ packages = (
         'enable' : False,
         'depends': 'atv-2.0, atv-2.1',
         'install': False,
-        'url'    : 'http://www.atvmod.com',
+        'url'    : 'http://atvusb-creator.googlecode.com',
         'type'   : 'plugin',
         'pkgname': 'Jamen',
         'loader' : 'install.sh'
@@ -323,6 +327,16 @@ packages = (
         'loader' : 'install.sh'
     },
     {
+        'name'   : 'SoftwareMenu',
+        'enable' : True,
+        'depends': 'atv-2.0, atv-2.1',
+        'install': True,
+        'url'    : 'SoftwareMenu.frappliance.tar.gz',
+        'type'   : 'plugin',
+        'pkgname': 'SoftwareMenu',
+        'loader' : 'install.sh'
+    },
+    {
         'name'   : 'Skype',
         'enable' : False,
         'depends': 'atv-1.1, ssh, vnc, watchdog-disable, kextload',
@@ -343,23 +357,13 @@ packages = (
         'loader' : 'install.sh'
     },
     {
-        'name'   : 'XBMC for Mac',
+        'name'   : 'XBMC/Boxee for Mac',
         'enable' : True,
         'depends': 'atv-2.0, atv-2.1',
         'install': True,
-        'url'    : 'http://downloads.sourceforge.net/xbmc/XBMC_for_Mac-Atlantis-Beta_1.dmg',
+        'url'    : 'XBMCLauncher.frappliance.tar.gz',
         'type'   : 'plugin',
         'pkgname': 'XBMCLauncher',
-        'loader' : 'install.sh'
-    },
-    {
-        'name'   : 'Boxee for Mac',
-        'enable' : True,
-        'depends': 'atv-2.0, atv-2.1',
-        'install': True,
-        'url'    : 'http://apt.boxee.tv/boxee-tiger3.dmg',
-        'type'   : 'plugin',
-        'pkgname': 'BoxeeLauncher',
         'loader' : 'install.sh'
     },
     {
@@ -367,7 +371,7 @@ packages = (
         'enable' : False,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
         'install': False,
-        'url'    : 'http://www.atvmod.com',
+        'url'    : 'http://atvusb-creator.googlecode.com',
         'type'   : 'package',
         'pkgname': 'USBMassStorage',
         'loader' : 'install.sh'
@@ -377,7 +381,7 @@ packages = (
         'enable' : False,
         'depends': 'atv-1.0, atv-1.1',
         'install': False,
-        'url'    : 'http://www.atvmod.com',
+        'url'    : 'http://atvusb-creator.googlecode.com',
         'type'   : 'package',
         'pkgname': 'AppleFileServices',
         'loader' : 'install.sh'
@@ -387,7 +391,7 @@ packages = (
         'enable' : False,
         'depends': 'atv-1.0, atv-1.1',
         'install': False,
-        'url'    : 'http://www.atvmod.com',
+        'url'    : 'http://atvusb-creator.googlecode.com',
         'type'   : 'package',
         'pkgname': 'SMBFileServices',
         'loader' : 'install.sh'
@@ -397,7 +401,7 @@ packages = (
         'enable' : False,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
         'install': False,
-        'url'    : 'http://www.atvmod.com',
+        'url'    : 'http://atvusb-creator.googlecode.com',
         'type'   : 'special',
         'pkgname': 'CompositeNTSC',
         'loader' : 'install.sh'
@@ -407,7 +411,7 @@ packages = (
         'enable' : False,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
         'install': False,
-        'url'    : 'http://www.atvmod.com',
+        'url'    : 'http://atvusb-creator.googlecode.com',
         'type'   : 'special',
         'pkgname': 'CompositePAL',
         'loader' : 'install.sh'
