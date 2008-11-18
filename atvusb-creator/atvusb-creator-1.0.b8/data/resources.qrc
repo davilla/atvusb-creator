@@ -1,0 +1,17 @@
+<RCC>
+  <qresource>
+    <file>atv-bootloader.png</file>
+    <file>restore.png</file>
+    <file>atv-patchstick.png</file>
+    <file>xbmc.png</file>
+    <file>boxee.png</file>
+    <file>elisa.png</file>
+    <file>knoppmyth.png</file>
+    <file>mythbuntu.png</file>
+  </qresource>
+  <qresource>
+    <file>refresh.png</file>
+    <file>install.png</file>
+    <file>uninstall.png</file>
+  </qresource>
+</RCC>
