@@ -4,25 +4,27 @@
 <array>
 	<dict>
 		<key>UpdateScript</key>
-		<string>http://atvusb-creator.googlecode.com/svn/tags/boxee-info/scripts/alpha-0.9.3383_update.sh</string>
+		<string>http://atv-xbmc-launcher.googlecode.com/svn/tags/boxee-info/scripts/alpha-0.9.3964_update.sh</string>
 		<key>URL</key>
-		<string>http://dl.boxee.tv/boxee-atv.dmg</string>
+		<string>http://dl.boxee.tv/boxee-0.9.3964.dmg</string>
 		<key>Type</key>
 		<string>Application</string>
 		<key>Name</key>
-		<string>Boxee alpha 0.9.3383</string>
+		<string>Boxee alpha 0.9.3964</string>
+		<key>MD5</key>
+		<string>32252deff45b3c8a1510a8517b071ed0</string>
 	</dict>
 	<dict>
 		<key>Name</key>
-		<string>XBMC/Boxee Launcher 0.2</string>
+		<string>XBMC/Boxee Launcher 0.6</string>
 		<key>Type</key>
 		<string>Launcher</string>
 		<key>URL</key>
-		<string>http://atv-xbmc-launcher.googlecode.com/files/XBMCLauncher-0.2-debug.run</string>
-		<key>UpdateScript</key>
-		<string>http://atv-xbmc-launcher.googlecode.com/svn/tags/xbmc-info/scripts/launcher-update-0.2.sh</string>
+		<string>http://atv-xbmc-launcher.googlecode.com/files/XBMCLauncher-0.6-debug.run</string>
 		<key>MD5</key>
-		<string>bd701a1ebc3d65b01ebf51652b3d9fbd</string>
+		<string>ea3e2d9af2a49e131db8588d79fe5624</string>
+		<key>UpdateScript</key>
+		<string>http://atv-xbmc-launcher.googlecode.com/svn/tags/xbmc-info/scripts/launcher-update-0.6.sh</string>
 	</dict>
 </array>
 </plist>
