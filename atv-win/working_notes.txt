@@ -1,0 +1,85 @@
+#*******************************************************
+dd if=/dev/zero of=atv256MB_disk.img bs=256 count=1000000
+gpt create atv256MB_disk.img
+gpt -r show atv256MB_disk.img
+
+# HFS+
+gpt add -b 40 -i 1 -s 51000 -t "48465300-0000-11AA-AA11-00306543ECAC" atv256MB_disk.img
+# MS (basic data partition)
+gpt add -b 51040 -i 2 -s 448900 -t "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7" atv256MB_disk.img
+
+hdiutil attach -nomount -noverify -noautofsck atv256MB_disk.img
+
+diskutil eraseVolume "HFS+" "Recovery" /dev/disk1s1
+diskutil eraseVolume "MS-DOS FAT32" "PATCHSTICK" /dev/disk1s2
+
+
+gpt remove -i 1 atv256MB_disk.img
+# HFS+ Recovery
+gpt add -b 40 -i 1 -s 51000 -t "5265636F-7665-11AA-AA11-00306543ECAC" atv256MB_disk.img
+
+#*******************************************************
+Skunkworks:davilla$ hfsdebug /Volumes/Recovery/boot.efi 
+  <Catalog B-Tree node = 2 (sector 0x1a8)>
+  path                 = Recovery:/boot.efi
+# Catalog File Record
+  type                 = file
+  file ID              = 19
+  flags                = 0000000000000010
+                       . File has a thread record in the catalog.
+  reserved1            = 0
+  createDate           = Sat Sep 27 16:49:51 2008
+  contentModDate       = Sat Sep 27 16:49:51 2008
+  attributeModDate     = Sat Nov 15 13:31:31 2008
+  accessDate           = Sat Nov 15 13:31:31 2008
+  backupDate           = Fri Jan  1 00:00:00 1904
+  # BSD Info
+  ownerID              = 501 (davilla)
+  groupID              = 99 (unknown)
+  adminFlags           = 00000000
+  ownerFlags           = 00000000
+  fileMode             = -rw-r--r--
+  linkCount            = 0
+  textEncoding         = 0
+  attrBlocks           = 0
+  # Finder Info
+  fdType               = 0x3f3f3f3f (????)
+  fdCreator            = 0x3f3f3f3f (????)
+  fdFlags              = 0000000000000000
+  fdLocation           = (v = 0, h = 0)
+  opaque               = 0
+  # Data Fork
+  logicalSize          = 298800 bytes
+  totalBlocks          = 73
+  fork temperature     = no HFC record in B-Tree
+  clumpSize            = 0
+  extents              =   startBlock   blockCount      % of file
+                                0x24e         0x49       100.00 %
+                         73 allocation blocks in 1 extents total.
+                         73.00 allocation blocks per extent on an average.
+  # Resource Fork
+  logicalSize          = 0 bytes
+
+#*******************************************************
+0x24e = 590 * 4096 = 2,416,640 byte offset in hfs partition
+
+40 * 512 = 20480 byte offset to hfs partition from start of disk image
+
+2,416,640 + 20480 = 2,437,120 byte offset from start of disk image to boot.efi
+
+#*******************************************************
+#*******************************************************
+http://www.alexpage.de/download/usbit/usbit.zip
+
+
+#*******************************************************
+#*******************************************************
+hdiutil attach -nomount -noverify -noautofsck atv256MB_disk.img
+
+
+gpt remove -i 1 atv256MB_disk.img
+
+gpt add -b 40 -i 1 -s 51000 -t "48465300-0000-11AA-AA11-00306543ECAC" atv256MB_disk.img
+
+
+

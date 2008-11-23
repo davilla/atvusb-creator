@@ -1,0 +1,154 @@
+// !$*UTF8*$!
+{
+	08FB7793FE84155DC02AAC07 /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = F51C916B0EC4A8DC00196643 /* injector */;
+		activeTarget = 8DD76F620486A84900D96B5E /* injector */;
+		addToTargets = (
+			8DD76F620486A84900D96B5E /* injector */,
+		);
+		breakpoints = (
+			F51C92560EC4DDEF00196643 /* main.cpp:179 */,
+			F537F7A20ECD08B600773741 /* injector.cpp:170 */,
+		);
+		breakpointsGroup = F51C918F0EC4AF3200196643 /* XCBreakpointsBucket */;
+		codeSenseManager = F51C91700EC4A8E900196643 /* Code sense */;
+		executables = (
+			F51C916B0EC4A8DC00196643 /* injector */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					243,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 249112876;
+			PBXWorkspaceStateSaveDate = 249112876;
+		};
+		sourceControlManager = F51C916F0EC4A8E900196643 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	08FB7796FE84155DC02AAC07 /* main.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 4;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = main.cpp;
+		path = /Users/Shared/injector/main.cpp;
+		sourceTree = "<absolute>";
+	};
+	8DD76F620486A84900D96B5E /* injector */ = {
+		activeExec = 0;
+		executables = (
+			F51C916B0EC4A8DC00196643 /* injector */,
+		);
+	};
+	F51C916B0EC4A8DC00196643 /* injector */ = {
+		isa = PBXExecutable;
+		activeArgIndex = 0;
+		activeArgIndices = (
+			YES,
+			YES,
+			YES,
+		);
+		argumentStrings = (
+			"--infile=boot.efi",
+			"--basefile=atv256MB_disk.img",
+			"--baseseek=430080",
+		);
+		autoAttachOnCrash = 1;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = injector;
+		savedGlobals = {
+		};
+		sourceDirectories = (
+		);
+		variableFormatDictionary = {
+		};
+	};
+	F51C916F0EC4A8E900196643 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+		scmType = "";
+	};
+	F51C91700EC4A8E900196643 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	F51C918F0EC4AF3200196643 /* XCBreakpointsBucket */ = {
+		isa = XCBreakpointsBucket;
+		name = "Project Breakpoints";
+		objects = (
+			F51C92560EC4DDEF00196643 /* main.cpp:179 */,
+			F537F7A20ECD08B600773741 /* injector.cpp:170 */,
+		);
+	};
+	F51C92560EC4DDEF00196643 /* main.cpp:179 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = 08FB7796FE84155DC02AAC07 /* main.cpp */;
+		functionName = "main()";
+		hitCount = 1;
+		lineNumber = 179;
+		modificationTime = 248318297.954387;
+		state = 1;
+	};
+	F51C929D0EC4EEA700196643 /* injector.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {668, 3962}}";
+			sepNavSelRange = "{5745, 0}";
+			sepNavVisRect = "{{0, 2238}, {653, 578}}";
+			sepNavWindowFrame = "{{534, 71}, {698, 707}}";
+		};
+	};
+	F537F7A20ECD08B600773741 /* injector.cpp:170 */ = {
+		isa = PBXFileBreakpoint;
+		actions = (
+		);
+		breakpointStyle = 0;
+		continueAfterActions = 0;
+		delayBeforeContinue = 0;
+		fileReference = F51C929D0EC4EEA700196643 /* injector.cpp */;
+		functionName = "main()";
+		hitCount = 1;
+		lineNumber = 170;
+		location = injector;
+		modificationTime = 248318201.018271;
+		state = 1;
+	};
+}
