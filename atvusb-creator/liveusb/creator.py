@@ -212,7 +212,12 @@ class LiveUSBCreator(object):
         if not os.path.exists(hfs_image):
             progress.status("Extracting recovery seed ...")
             archive = os.path.join(self.payloads, hfs_info[0]['file'])
-            self.extract_7z_image(progress, archive, hfs_image, self.staging)
+            if sys.platform == "darwin":
+                archive = archive + ".zip"
+                self.extract_zip_image(progress, archive, hfs_image, self.staging)
+            else:
+                archive = archive + ".7z"
+                self.extract_7z_image(progress, archive, hfs_image, self.staging)
 
     #---------------------------------------------------------------------------------
     def extract_7z_image(self, progress, archive, image, image_dst):
@@ -240,6 +245,18 @@ class LiveUSBCreator(object):
                 if status:
                     self.log.warning(" unable to extract %s" %(os.path.basename(archive) ) )
                     print rtn
+
+    #---------------------------------------------------------------------------------
+    def extract_zip_image(self, progress, archive, image, image_dst):
+        if os.path.exists(archive) and not os.path.exists(image):
+            os_cmd = 'unzip "%s" -d "%s"' %(archive, image_dst)
+            #
+            progress.status("  extracting %s" %(os.path.basename(archive) ) )
+            [status, rtn] = commands.getstatusoutput(os_cmd)
+            if status:
+                self.log.warning("  unable to extract %s" %(os.path.basename(archive) ) )
+                print rtn
+                return
 
     #---------------------------------------------------------------------------------
     def create_image(self, progress):

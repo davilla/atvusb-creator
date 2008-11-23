@@ -1,9 +1,9 @@
 # openssl dgst -sha1
 atv_dmg_info = (
     {
-        'name': 'AppleTV Update 2.2',
-        'url' : 'http://mesu.apple.com/data/OS/061-5262.20081002.tvap9/2Z694-5499.dmg',
-        'sha1': 'ed7256ee03b3a3fc5e0004089157f9b3ff3e6d4e',
+        'name': 'AppleTV Update 2.3',
+        'url' : 'http://mesu.apple.com/data/OS/061-5651.20081119.32VtA/2Z694-5573-24.dmg',
+        'sha1': 'b228a747ed6c9393861a6f1445d210471106a377',
     },
 )
 #        'name': 'AppleTV Update 2.1',
@@ -13,6 +13,10 @@ atv_dmg_info = (
 #        'name': 'AppleTV Update 2.2',
 #        'url' : 'http://mesu.apple.com/data/OS/061-5262.20081002.tvap9/2Z694-5499.dmg',
 #        'sha1': 'ed7256ee03b3a3fc5e0004089157f9b3ff3e6d4e',
+
+#        'name': 'AppleTV Update 2.3',
+#        'url' : 'http://mesu.apple.com/data/OS/061-5651.20081119.32VtA/2Z694-5573-24.dmg',
+#        'sha1': 'b228a747ed6c9393861a6f1445d210471106a377',
 
 osx_dmg_info = (
     {
@@ -55,7 +59,7 @@ fat_info = (
 hfs_info = (
     {
         'name'  : 'atv_recv.img',
-        'file'  : 'atv_recv.7z',
+        'file'  : 'atv_recv',
         'sha1'  : '0000000000000000000000000000000000000000',
         'size'  : 51000 * 512,
         'p1_fs' : 'hfsplus',
@@ -192,7 +196,7 @@ patchsticks = (
         'depends': 'atv-2.0',
     },
     {
-        'name'   : 'AppleTV version 2.1',
+        'name'   : 'AppleTV version 2.x',
         'enable' : True,
         'depends': 'atv-2.1',
     },
