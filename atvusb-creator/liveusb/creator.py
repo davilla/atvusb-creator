@@ -729,8 +729,8 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
         # create a GPT format direct on the flash drive
         os_cmd = 'diskutil partitionDisk %s 2 GPTFormat ' %(self.drive)
         os_cmd = os_cmd + '"HFS+" "Recovery" 26112000B '
-        os_cmd = os_cmd + '"MS-DOS FAT32" "PATCHSTICK" 485785600B'
-        #os_cmd = os_cmd + '"HFS+" "PATCHSTICK" 485785600B'
+        #os_cmd = os_cmd + '"MS-DOS FAT32" "PATCHSTICK" 485785600B'
+        os_cmd = os_cmd + '"HFS+" "PATCHSTICK" 485785600B'
         [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
             progress.status("Unable to partition device: %s" %(rtn) )
@@ -835,8 +835,8 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
 
     #---------------------------------------------------------------------------------
     def install_patchstick(self, progress):
-        os_cmd = 'mount_msdos "%s" "%s"' %(self.drive_patchstick , self.tmp_folder)
-        #os_cmd = 'mount_hfs "%s" "%s"' %(self.drive_patchstick , self.tmp_folder)
+        #os_cmd = 'mount_msdos "%s" "%s"' %(self.drive_patchstick , self.tmp_folder)
+        os_cmd = 'mount_hfs "%s" "%s"' %(self.drive_patchstick , self.tmp_folder)
         [status, rtn] = commands.getstatusoutput(os_cmd)
         if status:
             progress.status("Unable to mount PATCHSTICK: %s" %(rtn) )
