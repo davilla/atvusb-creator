@@ -8,8 +8,8 @@ There are two disk image versions:
 mk-atv-xbmc.bat will create a disk image that will install
 
   1) bintuils
-  2) SoftwareMenu-0.71
-  3) XBMCLauncher-0.6
+  2) SoftwareMenu-0.741
+  3) XBMCLauncher-0.8
 
 Use this version if you already have ssh on your AppleTV that
 was installed by a previous patchstick.
@@ -19,8 +19,8 @@ mk-atv-xbmc-ssh.bat will create a disk image that will install
 
   1) ssh
   2) bintuils
-  3) SoftwareMenu-0.71
-  4) XBMCLauncher-0.6
+  3) SoftwareMenu-0.741
+  4) XBMCLauncher-0.8
 
 SoftwareMenu can be used to install other AppleTV Plugins.
 
