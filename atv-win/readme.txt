@@ -3,6 +3,9 @@ The minimum USB flash drive supported is 256MB. USB flash drives can
 be restored back to full size using the HP USB Disk Storage Format
 Tool from here -> http://files.extremeoverclocking.com/file.php?f=197
 
+Usb Image Tool also supports backup and restore features, which can allow you
+to do this.
+
 There are two disk image versions:
 
 mk-atv-xbmc.bat will create a disk image that will install
@@ -51,7 +54,8 @@ been done.
 
 Enjoy and please be carefull selecting the desired USB flash drive :)
 
-Scott "Mr AppleTV" Davilla
+Scott "Mr AppleTV" Davilla,
+Updated to 2.4 by Sam.Nazarko
 
 
 

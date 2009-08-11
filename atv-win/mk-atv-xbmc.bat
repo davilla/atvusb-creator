@@ -13,18 +13,18 @@ IF EXIST boot.efi goto EFIEXISTS
 
 IF EXIST 2Z694-5499.dmg goto DMGEXISTS
 ECHO.
-ECHO.** Fetching Apple r2.3 update DMG
+ECHO.** Fetching Apple r2.4 update DMG
 ECHO.
-tools\wget\wget.exe http://mesu.apple.com/data/OS/061-5651.20081119.32VtA/2Z694-5573-24.dmg
+tools\wget\wget.exe http://mesu.apple.com/data/OS/061-6242.20090624.Aq20P/2Z694-5660-029.dmg
 IF errorlevel 1 GOTO ERROR
 
 :DMGEXISTS
 IF EXIST 2.hfs goto HFSEXISTS
 ECHO.
-ECHO.** Extracting HFS partition from the Apple r2.3 update DMG
+ECHO.** Extracting HFS partition from the Apple r2.4 update DMG
 ECHO. this is a lengthy process and this will take 5-10 minutes
 ECHO.
-tools\7-zip\7z.exe e 2Z694-5573-24.dmg 2.hfs
+tools\7-zip\7z.exe e 2Z694-5660-029.dmg 2.hfs
 IF errorlevel 1 GOTO ERROR
 
 :HFSEXISTS
