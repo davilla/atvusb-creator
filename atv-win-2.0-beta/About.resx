@@ -120,7 +120,11 @@
   <data name="RichTextBox1.Text" xml:space="preserve">
     <value>Apple TV Patchstick Creator 2.0, Codename "atv-win-2.0"
 
-Build 2.0 12th August 2009
+Build 2.0 2nd September 2009
+
+Please Note: Apple frequently remove updates from their server, 
+that is why there is a Choose DMG feature. Simply "acquire" the update
+from elsewhere and point Apple Tv Patchstick Creator 2.0 to it.
 
 Created by Sam Nazarko and Scott Davilla.
 

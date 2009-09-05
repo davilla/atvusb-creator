@@ -64,9 +64,10 @@
     Sub DetermineFileSources(ByVal ImgLoc)
         If FwBox.Items.Contains("Custom Firmware") Then
             BuildPatchStick(ImgLoc)
-        ElseIf FwBox.Items.Contains("Apple TV OS 2.4") Then
+        ElseIf FwBox.Items.Contains("Custom Firmware") = False Then
             Dim DownloadSuccess As Boolean
             'Use Item Text rather than Index to save updating every time.
+            'Use case for future proofing
             Select Case FwBox.SelectedItem
                 Case "Apple TV OS 2.4"
                     DownloadSuccess = DlFirmware("http://mesu.apple.com/data/OS/061-6242.20090624.Aq20P/2Z694-5660-029.dmg")
@@ -83,12 +84,15 @@
             Dim ImageOpenLocation As String
             ImageOpenLocation = FindCustomDmgDialog.FileName
             Try
-                My.Computer.FileSystem.CopyFile(ImageOpenLocation, System.AppDomain.CurrentDomain.BaseDirectory(), FileIO.UIOption.AllDialogs, FileIO.UICancelOption.ThrowException)
+                My.Computer.FileSystem.CopyFile(ImageOpenLocation.ToString, System.AppDomain.CurrentDomain.BaseDirectory & "FirmwareImage.dmg", FileIO.UIOption.AllDialogs, FileIO.UICancelOption.ThrowException)
             Catch
                 MessageBox.Show("An error occured copying your custom firmware. Please check permissions and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
             FwBox.Items.Clear()
             FwBox.Items.Add("Custom Firmware")
+            FwBox.Enabled = True
+            'Maybe later I will replace the Custom DMG button with Download DMG button -- Sam Nazarko.
+            MessageBox.Show("You have selected to patchstick a custom Apple Tv Firmware. If you wish to download one of the images through the application you will have to restart it.", "Custom Firmware Notice", MessageBoxButtons.OK, MessageBoxIcon.Information)
         End If
     End Sub
     Function DlFirmware(ByVal DlUrl)
@@ -136,7 +140,8 @@
             RunUSB = MessageBox.Show("Would you like to run USB Image Tool now?", "atv-win-2.0", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
             If RunUSB = Windows.Forms.DialogResult.Yes Then
                 Shell(System.AppDomain.CurrentDomain.BaseDirectory() & "usbit.exe", AppWinStyle.NormalFocus, True)
-                'TODO: Cleanup files after imaging. This might delete a backup the user creates so it's probably best to leave it.
+                'TODO: Cleanup files after imaging. This COULD delete an image the user has left for backup so make it there own responsibility.
+                MessageBox.Show("You can now delete all the files in the directory that you run Apple Tv Patchstick Creator from if you have not created a backup with Usb Image Tool.", "Cleanup Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
             End If
         Catch
             MessageBox.Show("An error occured patching your firmware file. Please try again later.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
