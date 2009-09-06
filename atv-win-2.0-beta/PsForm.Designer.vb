@@ -28,7 +28,7 @@ Partial Class PatchStickForm
         Me.FwVerLbl = New System.Windows.Forms.Label
         Me.FwBox = New System.Windows.Forms.ComboBox
         Me.FirmwareGroup = New System.Windows.Forms.GroupBox
-        Me.CustomDMGBtn = New System.Windows.Forms.Button
+        Me.CToggleBtn = New System.Windows.Forms.Button
         Me.SoftwareInstallationsGroup = New System.Windows.Forms.GroupBox
         Me.Label2 = New System.Windows.Forms.Label
         Me.LauncherChkBx = New System.Windows.Forms.CheckBox
@@ -96,7 +96,7 @@ Partial Class PatchStickForm
         '
         'FirmwareGroup
         '
-        Me.FirmwareGroup.Controls.Add(Me.CustomDMGBtn)
+        Me.FirmwareGroup.Controls.Add(Me.CToggleBtn)
         Me.FirmwareGroup.Controls.Add(Me.FwBox)
         Me.FirmwareGroup.Controls.Add(Me.FwVerLbl)
         Me.FirmwareGroup.Location = New System.Drawing.Point(12, 106)
@@ -106,14 +106,13 @@ Partial Class PatchStickForm
         Me.FirmwareGroup.TabStop = False
         Me.FirmwareGroup.Text = "Firmware"
         '
-        'CustomDMGBtn
+        'CToggleBtn
         '
-        Me.CustomDMGBtn.Location = New System.Drawing.Point(220, 68)
-        Me.CustomDMGBtn.Name = "CustomDMGBtn"
-        Me.CustomDMGBtn.Size = New System.Drawing.Size(94, 25)
-        Me.CustomDMGBtn.TabIndex = 8
-        Me.CustomDMGBtn.Text = "Custom DMG"
-        Me.CustomDMGBtn.UseVisualStyleBackColor = True
+        Me.CToggleBtn.Location = New System.Drawing.Point(220, 68)
+        Me.CToggleBtn.Name = "CToggleBtn"
+        Me.CToggleBtn.Size = New System.Drawing.Size(94, 25)
+        Me.CToggleBtn.TabIndex = 8
+        Me.CToggleBtn.UseVisualStyleBackColor = True
         '
         'SoftwareInstallationsGroup
         '
@@ -232,7 +231,7 @@ Partial Class PatchStickForm
     Friend WithEvents LauncherChkBx As System.Windows.Forms.CheckBox
     Friend WithEvents Label2 As System.Windows.Forms.Label
     Friend WithEvents CreatePatchStickBtn As System.Windows.Forms.Button
-    Friend WithEvents CustomDMGBtn As System.Windows.Forms.Button
+    Friend WithEvents CToggleBtn As System.Windows.Forms.Button
     Friend WithEvents FindCustomDmgDialog As System.Windows.Forms.OpenFileDialog
     Friend WithEvents SavePatchstickDialog As System.Windows.Forms.SaveFileDialog
 

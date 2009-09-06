@@ -1,5 +1,5 @@
 ﻿Public Class PatchStickForm
-
+    Dim Success As Boolean
     Private Sub PatchStickForm_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
         FormFade("out")
     End Sub
@@ -29,6 +29,7 @@
             End If
         Catch
         End Try
+        CToggleBtn.Text = "Choose DMG"
     End Sub
     Sub FormFade(ByVal FType)
         'Form fader allows us to fade in the form or fade it out.
@@ -59,12 +60,11 @@
             DetermineFileSources(ImageSaveLocation)
         Else
         End If
-
     End Sub
     Sub DetermineFileSources(ByVal ImgLoc)
-        If FwBox.Items.Contains("Custom Firmware") Then
+        If FwBox.Enabled = False Then
             BuildPatchStick(ImgLoc)
-        ElseIf FwBox.Items.Contains("Custom Firmware") = False Then
+        ElseIf FwBox.Enabled = True Then
             Dim DownloadSuccess As Boolean
             'Use Item Text rather than Index to save updating every time.
             'Use case for future proofing
@@ -79,7 +79,25 @@
             End Select
         End If
     End Sub
-    Private Sub CustomDMGBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CustomDMGBtn.Click
+    Private Sub CustomDMGBtn_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CToggleBtn.Click
+        If CToggleBtn.Text = "Choose DMG" Then ToggleHandler("cf") Else If CToggleBtn.Text = "Use Wizard" Then ToggleHandler("wz")
+
+    End Sub
+    Private Sub ToggleHandler(ByVal typeofps)
+        If typeofps = "cf" Then
+            FwBox.Enabled = False
+            CToggleBtn.Text = "Use Wizard"
+            PrepCustom()
+        Else
+            If typeofps = "wz" Then
+                CToggleBtn.Text = "Choose DMG"
+                FwBox.Enabled = True
+                FwBox.Items.Clear()
+                FwBox.Items.Add("Apple TV OS 2.4")
+            End If
+        End If
+    End Sub
+    Private Sub PrepCustom()
         If FindCustomDmgDialog.ShowDialog = DialogResult.OK Then
             Dim ImageOpenLocation As String
             ImageOpenLocation = FindCustomDmgDialog.FileName
@@ -89,10 +107,7 @@
                 MessageBox.Show("An error occured copying your custom firmware. Please check permissions and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
             FwBox.Items.Clear()
-            FwBox.Items.Add("Custom Firmware")
-            FwBox.Enabled = True
-            'Maybe later I will replace the Custom DMG button with Download DMG button -- Sam Nazarko.
-            MessageBox.Show("You have selected to patchstick a custom Apple Tv Firmware. If you wish to download one of the images through the application you will have to restart it.", "Custom Firmware Notice", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            FwBox.Enabled = False
         End If
     End Sub
     Function DlFirmware(ByVal DlUrl)
@@ -113,7 +128,7 @@
             My.Computer.FileSystem.WriteAllBytes(System.AppDomain.CurrentDomain.BaseDirectory() & "usbit.exe", My.Resources.Tools.usbit, False)
             My.Computer.FileSystem.WriteAllBytes(System.AppDomain.CurrentDomain.BaseDirectory() & "usbit32.dll", My.Resources.Tools.usbit32, False)
             My.Computer.FileSystem.WriteAllBytes(System.AppDomain.CurrentDomain.BaseDirectory() & "injector.exe", My.Resources.Tools.injector, False)
-            My.Computer.FileSystem.WriteAllText(System.AppDomain.CurrentDomain.BaseDirectory() & "FinaliseImage.bat", My.Resources.Tools.FinaliseImage, False)
+            My.Computer.FileSystem.WriteAllText(System.AppDomain.CurrentDomain.BaseDirectory() & "FinaliseImage.cmd", My.Resources.Tools.FinaliseImage, False)
             'Write the software package depending on SSH preference
             If SSHToggle = True Then
                 My.Computer.FileSystem.WriteAllBytes(System.AppDomain.CurrentDomain.BaseDirectory() & "software.7z", My.Resources.Tools.atv_xbmc_ssh, False)
@@ -126,7 +141,7 @@
             'Modify image by running bat script.
             Dim objProcess As System.Diagnostics.Process
             objProcess = New System.Diagnostics.Process()
-            objProcess.StartInfo.FileName = System.AppDomain.CurrentDomain.BaseDirectory() & "FinaliseImage.bat"
+            objProcess.StartInfo.FileName = System.AppDomain.CurrentDomain.BaseDirectory() & "FinaliseImage.cmd"
             objProcess.StartInfo.WorkingDirectory = System.AppDomain.CurrentDomain.BaseDirectory()
             objProcess.StartInfo.WindowStyle = ProcessWindowStyle.Normal
             objProcess.Start()
@@ -136,16 +151,17 @@
             My.Computer.FileSystem.MoveFile(System.AppDomain.CurrentDomain.BaseDirectory() & "ImageFile.img", ImgLocation, FileIO.UIOption.AllDialogs, FileIO.UICancelOption.ThrowException)
             'Confirm success
             MessageBox.Show("Congratulations, your patchstick image has been created. Here are a few things to note:" & vbCrLf & vbCrLf & "If you installed SSH, your username and password is frontrow, frontrow." & vbCrLf & vbCrLf & "You should update Software Menu before installing software through it" & vbCrLf & vbCrLf & "You should update Launcher before downloading Boxee or XBMC" & vbCrLf & vbCrLf & "Thank you for using atv-win-2.0", "Patchstick Created", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Success = True
             Dim RunUSB As DialogResult
             RunUSB = MessageBox.Show("Would you like to run USB Image Tool now?", "atv-win-2.0", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
             If RunUSB = Windows.Forms.DialogResult.Yes Then
                 Shell(System.AppDomain.CurrentDomain.BaseDirectory() & "usbit.exe", AppWinStyle.NormalFocus, True)
                 'TODO: Cleanup files after imaging. This COULD delete an image the user has left for backup so make it there own responsibility.
-                MessageBox.Show("You can now delete all the files in the directory that you run Apple Tv Patchstick Creator from if you have not created a backup with Usb Image Tool.", "Cleanup Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
             End If
         Catch
             MessageBox.Show("An error occured patching your firmware file. Please try again later.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+        If Success = True Then MessageBox.Show("You can now delete all the files in the directory that you run Apple Tv Patchstick Creator from if you have not created a backup with Usb Image Tool.", "Cleanup Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
     Private Sub AboutLnk_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles AboutLnk.LinkClicked

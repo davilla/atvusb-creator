@@ -25,6 +25,8 @@ Partial Class About
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(About))
         Me.Label1 = New System.Windows.Forms.Label
         Me.RichTextBox1 = New System.Windows.Forms.RichTextBox
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Label1
@@ -40,19 +42,30 @@ Partial Class About
         'RichTextBox1
         '
         Me.RichTextBox1.ForeColor = System.Drawing.Color.DodgerBlue
-        Me.RichTextBox1.Location = New System.Drawing.Point(12, 36)
+        Me.RichTextBox1.Location = New System.Drawing.Point(12, 165)
         Me.RichTextBox1.Name = "RichTextBox1"
+        Me.RichTextBox1.ReadOnly = True
         Me.RichTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical
-        Me.RichTextBox1.Size = New System.Drawing.Size(339, 209)
+        Me.RichTextBox1.Size = New System.Drawing.Size(339, 183)
         Me.RichTextBox1.TabIndex = 1
         Me.RichTextBox1.Text = resources.GetString("RichTextBox1.Text")
+        '
+        'PictureBox1
+        '
+        Me.PictureBox1.Image = Global.atv_win_2._0.My.Resources.Resources.atvbootloader
+        Me.PictureBox1.Location = New System.Drawing.Point(12, 36)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(229, 123)
+        Me.PictureBox1.TabIndex = 3
+        Me.PictureBox1.TabStop = False
         '
         'About
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.White
-        Me.ClientSize = New System.Drawing.Size(363, 254)
+        Me.ClientSize = New System.Drawing.Size(363, 355)
+        Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.RichTextBox1)
         Me.Controls.Add(Me.Label1)
         Me.Font = New System.Drawing.Font("Arial", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -63,10 +76,12 @@ Partial Class About
         Me.MinimizeBox = False
         Me.Name = "About"
         Me.Text = "Apple TV Patchstick Creator 2.0"
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents RichTextBox1 As System.Windows.Forms.RichTextBox
+    Friend WithEvents PictureBox1 As System.Windows.Forms.PictureBox
 End Class

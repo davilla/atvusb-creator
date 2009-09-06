@@ -137,7 +137,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\7z.dll" />
-    <None Include="Resources\FinaliseImage.bat" />
+    <None Include="Resources\FinaliseImage.cmd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\atv-bootloader.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
