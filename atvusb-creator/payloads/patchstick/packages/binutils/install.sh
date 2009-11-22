@@ -16,7 +16,7 @@ if [ -d "/staging" ]; then
   chown 0:0 /staging/${PACKAGE}/*
   chmod 755 /staging/${PACKAGE}/*
   chmod +s  /staging/${PACKAGE}/top
-  rsync /staging/${PACKAGE}/* /OSBoot/usr/bin/
+  rsync -ar /staging/${PACKAGE}/* /OSBoot/usr/bin/
 
   # always clean staging directory when done
   rm -rf /staging/*
