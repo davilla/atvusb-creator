@@ -1,0 +1,24 @@
+Injector32
+------------
+
+(Sam Nazarko)
+
+Notes: Used for injecting boot.efi into software image.
+	
+	Following is harcoded:
+
+	- Offset Number = 2437120
+	- Basefile = BootImage	
+	- InFile = boot.efi
+
+patchefi() is a boolean function:
+
+_declspec(dllexport) int patchefi() {
+
+returning true if there is an error, false if there is not.
+
+Use in .NET with InteropServices, pinvoke
+
+04/02/2010:  - Updated Basefile to "BootImage"
+             - Renamed DLL to Injector32.
+             - Changed function name to patchefi

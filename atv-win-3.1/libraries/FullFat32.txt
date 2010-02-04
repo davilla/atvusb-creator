@@ -1,0 +1,10 @@
+FullFAT DLL
+-----------
+
+Many thanks to James Walmsley,
+http://code.google.com/p/fullfat
+
+Trunk Version: "1.0.6-2"
+Trunk Date:     02/02/10
+
+Licensed under GPLV3
