@@ -249,13 +249,13 @@ class LiveUSBDialog(QtGui.QDialog, Ui_aucDialog):
 
     #---------------------------------------------------------------------------------
     def get_appletv_dmg_url(self):
-        #import urllib
+        import urllib
         #from xml.dom import minidom
-        #
+        xml_doc = urllib.urlopen('http://atvusb-creator.googlecode.com/files/latest_ATV_dmg.xml').read()
         #xml_doc = minidom.parse(urllib.urlopen('http://mesu.apple.com/version.xml'))
-        #self.atv_dmg_url = xml_doc.getElementsByTagName('dict')[1].getElementsByTagName('string')[1].firstChild.data
+        self.atv_dmg_url = xml_doc.split("<string>")[1].split("</string>")[0]
         #self.atv_dmg_url = 'http://mesu.apple.com/data/OS/061-4632.2080414.gt5rW/2Z694-5428-3.dmg'
-        self.atv_dmg_url = atv_dmg_info[0]['url']
+        #self.atv_dmg_url = atv_dmg_info[0]['url']
     
     #---------------------------------------------------------------------------------
     def set_installers(self):
