@@ -213,9 +213,9 @@ packages = (
         'enable' : True,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
         'install': True,
-        'url'    : 'binutils.tar.gz',
+        'url'    : 'OpenSSH-56.root.tar.bz2',
         'type'   : 'package',
-        'pkgname': 'dropbear',
+        'pkgname': 'openssh',
         'loader' : 'install.sh'
     },
     {
@@ -223,7 +223,7 @@ packages = (
         'enable' : True,
         'depends': 'atv-1.0, atv-1.1, atv-2.0, atv-2.1',
         'install': True,
-        'url'    : 'dropbear.tar.gz',
+        'url'    : 'binutils.tar.gz',
         'type'   : 'package',
         'pkgname': 'binutils',
         'loader' : 'install.sh'
