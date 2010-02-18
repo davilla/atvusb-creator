@@ -196,7 +196,7 @@ patchsticks = (
         'depends': 'atv-2.0',
     },
     {
-        'name'   : 'AppleTV version 2.x',
+        'name'   : 'AppleTV version 3.x',
         'enable' : True,
         'depends': 'atv-2.1',
     },
