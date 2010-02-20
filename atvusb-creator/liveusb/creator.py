@@ -649,7 +649,9 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
                     Ejectable = words[1].strip()
                 if words[0].strip() == "Total Size":
                     DiskSize = words[1].strip()
-            if Protocol == "USB" and Ejectable == "Yes":
+                    try: DiskSizeB = int(DiskSize.split("(")[1].split(" B")[0])
+                    except: DiskSizeB = 250522561
+            if Protocol == "USB" and Ejectable == "Yes" and DiskSizeB > 250522560 and DiskSizeB < 70719476736:
                 label = None
                 self.drives[drive] = {
                     'mount'   : drive,
