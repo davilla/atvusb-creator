@@ -1,0 +1,9 @@
+7-Z DLL
+-----------
+
+This is a custom DLL for SevenZipSharp. It is optimised to provide about 10-20% speed and is 
+based on 7z-9.10 beta.
+
+See http://www.codeplex.com/sevenzipsharp
+
+Licensed under LGPLV3 (see 7-Zip-License)

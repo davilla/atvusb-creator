@@ -1,0 +1,9 @@
+Extraction of archives is simple with this C# library
+
+(http://www.codeplex.com/sevenzipsharp/
+
+Many thanks for this library
+
+Version r43078 x86 (HFS, DMG sigs included)
+
+(LGPL 3.0)
