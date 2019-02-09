@@ -635,6 +635,7 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
         drives = rtn.split("\n")
         for drive in drives:
             #print drive
+            drive = drive.split(" ")[0]
             Protocol = None
             Ejectable = "No"
             [status, rtn] = commands.getstatusoutput('diskutil info "%s"' %(drive) )
@@ -645,13 +646,13 @@ class DarwinLiveUSBCreator(LiveUSBCreator):
                 #print words
                 if words[0].strip() == "Protocol":
                     Protocol = words[1].strip()
-                if words[0].strip() == "Ejectable":
+                if words[0].strip() == "Removable Media":
                     Ejectable = words[1].strip()
-                if words[0].strip() == "Total Size":
+                if words[0].strip() == "Disk Size":
                     DiskSize = words[1].strip()
                     try: DiskSizeB = int(DiskSize.split("(")[1].split(" B")[0])
                     except: DiskSizeB = 250522561
-            if Protocol == "USB" and Ejectable == "Yes" and DiskSizeB > 250522560 and DiskSizeB < 70719476736:
+            if Protocol == "USB" and Ejectable == "Removable" and DiskSizeB > 250522560 and DiskSizeB < 70719476736:
                 label = None
                 self.drives[drive] = {
                     'mount'   : drive,
